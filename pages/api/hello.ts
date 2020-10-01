@@ -3,6 +3,7 @@
 import { NextApiResponse, NextApiRequest } from 'next';
 
 export default (req: NextApiRequest, res: NextApiResponse) => {
-  res.statusCode = 200;
+  const HTTP_OK = 200;
+  res.statusCode = HTTP_OK;
   res.json({ name: 'John Doe' });
 };
