@@ -9,11 +9,11 @@ A boilerplate to use in projects with NextJs and TypeScript.
 - TypeScript support
 - [Prettier](https://prettier.io/)
 - [Linting](https://palantir.github.io/tslint/)
+- [Git hooks](https://github.com/typicode/husky)
 
 ### Planned
 
 - [Material UI](https://material-ui.com/)
-- [Git hooks](https://github.com/typicode/husky)
 - [TypeScript source path aliases support](https://stackoverflow.com/questions/51319613/in-vs-code-ts-cannot-find-module-src-xxx)
 - Advanced build time constants (including [git revisions](https://www.npmjs.com/package/git-revision-webpack-plugin) and secrets)
 - Server settings read from filesystem
