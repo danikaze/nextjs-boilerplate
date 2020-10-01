@@ -7,6 +7,7 @@ A boilerplate to use in projects with NextJs and TypeScript.
 ### Ready
 
 - TypeScript support
+- TypeScript source path aliases support
 - [Prettier](https://prettier.io/)
 - [Linting](https://palantir.github.io/tslint/)
 - [Git hooks](https://github.com/typicode/husky)
@@ -14,7 +15,6 @@ A boilerplate to use in projects with NextJs and TypeScript.
 ### Planned
 
 - [Material UI](https://material-ui.com/)
-- [TypeScript source path aliases support](https://stackoverflow.com/questions/51319613/in-vs-code-ts-cannot-find-module-src-xxx)
 - Advanced build time constants (including [git revisions](https://www.npmjs.com/package/git-revision-webpack-plugin) and secrets)
 - Server settings read from filesystem
 - Isomorphic server and client logs
@@ -49,3 +49,11 @@ git push -u origin master
 ```
 npm install
 ```
+
+## Configuration
+
+### TypeScript path aliases
+
+- For path aliases to be available in the main process, edit the [main/tsconfig.json](./main/tsconfig.json) file.
+- For path aliases to be available in the renderer process, edit the [renderer/tsconfig.json](./renderer/tsconfig.json) file.
+- Add the union of all the added aliases to the `no-implicit-dependencies` rule in the [tslint.yaml](./tslint.yaml) file.

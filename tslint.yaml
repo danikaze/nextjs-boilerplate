@@ -419,3 +419,7 @@ rules:
   no-implicit-dependencies:
     - true
     - dev
+    # Our custom aliases/absolute-pathes
+    - - '@components'
+      - '@styles'
+      - '@utils'
