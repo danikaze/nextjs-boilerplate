@@ -1,30 +1,50 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# nextjs-boilerplate
 
-## Getting Started
+A boilerplate to use in projects with NextJs and TypeScript.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
+### Ready
+- TypeScript support
+
+### Planned
+
+- [Material UI](https://material-ui.com/)
+- [Prettier](https://prettier.io/)
+- [Linting](https://palantir.github.io/tslint/)
+- [Git hooks](https://github.com/typicode/husky)
+- [TypeScript source path aliases support](https://stackoverflow.com/questions/51319613/in-vs-code-ts-cannot-find-module-src-xxx)
+- Advanced build time constants (including [git revisions](https://www.npmjs.com/package/git-revision-webpack-plugin) and secrets)
+- Server settings read from filesystem
+- Isomorphic server and client logs
+- i18n
+- Migrate to [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint)
+- Unit testing
+- Visual regression testing
+
+## Setup
+
+Points **1** and **2** can be combined if using this repository as a template when creating a new one.
+
+1. Clone this repository
+
+```
+git clone https://github.com/danikaze/nextron-boilerplate.git PROJECT_FOLDER
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Change the origin to the new repository
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+```
+cd PROJECT_FOLDER
+git remote rm origin
+git remote add origin YOUR_REMOTE_REPOSITORY.git
+git push -u origin master
+```
 
-## Learn More
+3. Change the `name`, `description` and `version` if needed in [package.json].
 
-To learn more about Next.js, take a look at the following resources:
+4. Install the needed packages
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/import?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+```
+npm install
+```
