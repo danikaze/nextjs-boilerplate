@@ -14,7 +14,9 @@ const Home: NextPage = () => {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Create Next App</title>
+        <title>
+          {PACKAGE_NAME} - {PACKAGE_VERSION} ({COMMIT_HASH_SHORT})
+        </title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

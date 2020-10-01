@@ -11,11 +11,11 @@ A boilerplate to use in projects with NextJs and TypeScript.
 - [Prettier](https://prettier.io/)
 - [Linting](https://palantir.github.io/tslint/)
 - [Git hooks](https://github.com/typicode/husky)
+- Advanced [build time constants](./build-time-constants/README.md) (including [git revisions](https://www.npmjs.com/package/git-revision-webpack-plugin) and secrets)
 
 ### Planned
 
 - [Material UI](https://material-ui.com/)
-- Advanced build time constants (including [git revisions](https://www.npmjs.com/package/git-revision-webpack-plugin) and secrets)
 - Server settings read from filesystem
 - Isomorphic server and client logs
 - i18n
