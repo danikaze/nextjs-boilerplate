@@ -1,0 +1,17 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "outDir": "../dist",
+    "target": "es2017",
+    "isolatedModules": false,
+    "noEmit": false
+  },
+  "include": [
+    "../build-time-constants/build.d.ts",
+    "../build-time-constants/global.d.ts",
+    "../build-time-constants/server.d.ts",
+    "./**/*.ts"
+  ],
+  "exclude": ["node_modules"]
+}

@@ -9,6 +9,7 @@ module.exports = {
     // add build-time defined constants
     config.plugins.push(
       ...getBuildTimeConstantsPlugins({
+        type: isServer ? 'server' : 'client',
         buildId,
         dev,
         isServer,
