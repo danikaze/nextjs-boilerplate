@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "test": "tslint -p tsconfig.json -c tslint.yaml",
+    "dev": "nodemon",
+    "build": "NODE_ENV=production next build && tsc --project server/tsconfig.json",
+    "start": "NODE_ENV=production node ./dist/index.js",
+    "test": "npm run lint-nextjs && npm run lint-custom-server",
+    "lint-nextjs": "tslint -p tsconfig.json -c tslint.yaml",
+    "lint-custom-server": "tslint -p server/tsconfig.json -c tslint.yaml",
     "prettier": "prettier --write '**/*.{ts,tsx}'"
   },
   "husky": {
@@ -26,7 +28,9 @@
   "devDependencies": {
     "git-revision-webpack-plugin": "^3.0.6",
     "husky": "^4.3.0",
+    "nodemon": "^2.0.4",
     "prettier": "^2.1.2",
+    "ts-node": "^9.0.0",
     "tslint": "^6.1.3",
     "tslint-consistent-codestyle": "^1.16.0",
     "tslint-eslint-rules": "^5.4.0",
