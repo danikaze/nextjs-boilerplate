@@ -21,6 +21,7 @@ const Home: NextPage = () => {
       </Head>
 
       <main className={styles.main}>{helloWorld}</main>
+      <div>PRODUCTION: {IS_PRODUCTION ? 'true' : 'false'}</div>
     </div>
   );
 };

@@ -1,8 +1,10 @@
 /*
  * Data from server.js
  */
-/** Example of a value available for the server-side code */
-declare const SERVER_EXAMPLE: string;
+/**
+ * Default port to run NextJs server on if not specified by process.env.PORT
+ */
+declare const SERVER_DEFAULT_PORT: number;
 
 /*
  * Data from server-secret.js
