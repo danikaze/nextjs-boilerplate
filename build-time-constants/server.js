@@ -1,3 +1,3 @@
 module.exports = {
-  SERVER_EXAMPLE: 'SERVER_EXAMPLE',
+  SERVER_DEFAULT_PORT: 3000,
 };

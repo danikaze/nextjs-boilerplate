@@ -1,0 +1,5 @@
+{
+  "watch": ["server", "build-time-constants"],
+  "exec": "ts-node --project server/tsconfig.json --files server/index.ts",
+  "ext": "js ts"
+}
