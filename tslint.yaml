@@ -421,5 +421,6 @@ rules:
     - dev
     # Our custom aliases/absolute-pathes
     - - '@components'
+      - '@store'
       - '@styles'
       - '@utils'
