@@ -17,10 +17,10 @@ A boilerplate to use in projects with NextJs and TypeScript.
   - [redux-thunk](https://github.com/reduxjs/redux-thunk)
   - [redux-promise-middleware](https://github.com/pburtchaell/redux-promise-middleware)
   - [redux-immutable-state-invariant](https://github.com/leoasis/redux-immutable-state-invariant)
+- [Material-UI](https://material-ui.com/) with [tree shaking](https://material-ui.com/guides/minimizing-bundle-size/)
 
 ### Planned
 
-- [Material UI](https://material-ui.com/)
 - Server settings read from filesystem
 - Isomorphic server and client logs
 - i18n
@@ -118,3 +118,22 @@ Reducers here works with the standard [combineReducers](https://redux.js.org/api
 The only thing to do in [reducers/index.ts](./store/reducers/index.ts) which provides the global reducer file, is to fill the `combinedReducer` with the list of your context/container reducers.
 
 The resulting reducer will be combined with the special [hydrateReducer](./store/reducers/hydrate.ts) which is required by [next-redux-wrapper](https://github.com/kirill-konshin/next-redux-wrapper#state-reconciliation-during-hydration).
+
+### Material-UI
+
+Material-UI is supported including [server side rendering](https://material-ui.com/guides/server-rendering/) as recommended in the [library documentation](https://github.com/mui-org/material-ui/tree/master/examples/nextjs). It generates style sheets in server side which are removed later in client side on the first render of the page.
+
+The theme used by the app can be customized editing the files in [@themes](./themes/index.ts).
+
+The package [clsx](https://github.com/lukeed/clsx) is available by default if the preferred option is `makeStyles` but using `withStyles` is also an alternative to avoid dealing with classnames.
+
+Because [tree shaking is enabled via Babel](https://material-ui.com/guides/minimizing-bundle-size/), it is safe to import all the components in one line from `@material-ui/core` like the following code shows:
+
+```ts
+// ✔️ Without tree-shaking this would be needed
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+
+// ✔️ Because tree-shaking is enabled, this is safe and still fast!
+import { Button, TextField } from '@material-ui/core';
+```
