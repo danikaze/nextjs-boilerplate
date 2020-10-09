@@ -1,6 +1,6 @@
-import Head from 'next/head';
 import { NextPage } from 'next';
-import { HelloWorld } from '@components/hello-world';
+import Head from 'next/Head';
+import { HelloWorld, Props as HelloWorldProps } from '@components/hello-world';
 import { testUtil } from '@utils/test';
 import { useDispatch, useSelector } from 'react-redux';
 import { store } from '@store';
@@ -20,13 +20,17 @@ function usePage() {
 }
 
 const Home: NextPage = () => {
-  const helloWorld = testUtil(false) ? (
-    <HelloWorld />
-  ) : (
-    <HelloWorld saluteWho="you" />
-  );
-
   const { count, increase, decrease } = usePage();
+
+  const props: HelloWorldProps = {
+    count,
+    onIncrease: increase,
+    onDecrease: decrease,
+  };
+
+  if (testUtil(true)) {
+    props.saluteWho = 'you';
+  }
 
   return (
     <div className={styles.container}>
@@ -34,26 +38,10 @@ const Home: NextPage = () => {
         <title>
           {PACKAGE_NAME} - {PACKAGE_VERSION} ({COMMIT_HASH_SHORT})
         </title>
-        <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main className={styles.main}>
-        <h3>{helloWorld}</h3>
-        <p>
-          <span
-            onClick={decrease}
-            style={{ cursor: 'pointer', userSelect: 'none' }}
-          >
-            ⊖
-          </span>
-          {` `}[{count}]{` `}
-          <span
-            onClick={increase}
-            style={{ cursor: 'pointer', userSelect: 'none' }}
-          >
-            ⊕
-          </span>
-        </p>
+        <HelloWorld {...props} />
       </main>
       <div>PRODUCTION: {IS_PRODUCTION ? 'true' : 'false'}</div>
     </div>
