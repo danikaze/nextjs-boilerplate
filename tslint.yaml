@@ -424,4 +424,5 @@ rules:
     - - '@components'
       - '@store'
       - '@styles'
+      - '@themes'
       - '@utils'
