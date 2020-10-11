@@ -1,14 +1,15 @@
 import { useContext } from 'react';
 import NextI18Next, { I18nContext } from 'next-i18next';
 
+const AVAILABLE_LANGS = AVAILABLE_LANGUAGES;
 const i18next = new NextI18Next({
   defaultLanguage: 'en',
   fallbackLng: 'en',
-  otherLanguages: ['en', 'es'],
+  otherLanguages: AVAILABLE_LANGS,
   localePath: IS_SERVER ? LOCALES_PATH : LOCALES_URL,
 });
 
-export type Lang = 'en' | 'es';
+export type Lang = AVAILABLE_LANGUAGE_TYPE;
 
 /**
  * Wrap the Next App to provide a store
@@ -40,4 +41,4 @@ export const getCurrentLanguage = () => {
 /**
  * List of available languages
  */
-export const availableLangs = () => ['en', 'es'] as Lang[];
+export const availableLangs = () => AVAILABLE_LANGS as Lang[];
