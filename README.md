@@ -2,6 +2,8 @@
 
 A boilerplate to use in projects with NextJs and TypeScript.
 
+[![Build Status](https://travis-ci.org/danikaze/nextjs-boilerplate.svg?branch=master)](https://travis-ci.org/danikaze/nextjs-boilerplate)
+
 ## Features
 
 ### Ready

@@ -1,0 +1,5 @@
+language: node_js
+# Do not specify node_js field/version so it's always consistent with .nvmrc
+cache:
+  directories:
+    - 'node_modules'
