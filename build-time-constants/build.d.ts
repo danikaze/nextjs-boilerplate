@@ -18,3 +18,9 @@ declare const BUILD_ID: string;
 declare const IS_PRODUCTION: boolean;
 /** Env constant set to `true` when executed in server side */
 declare const IS_SERVER: boolean;
+/** Absolute path to the locales url */
+declare const LOCALES_URL: string;
+/** List of available languages (folders) from the LOCALES_PATH */
+declare const AVAILABLE_LANGUAGES: AVAILABLE_LANGUAGE_TYPE[];
+/** List of available i18n languages (auto-generated from LOCALES_PATH) */
+type AVAILABLE_LANGUAGE_TYPE = 'en' | 'es';
