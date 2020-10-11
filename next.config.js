@@ -1,4 +1,6 @@
-const { getBuildTimeConstantsPlugins } = require('./build-time-constants');
+const {
+  getBuildTimeConstantsPlugins,
+} = require('./build-tools/build-time-constants');
 
 module.exports = {
   webpack: (config, { buildId, dev, isServer, webpack }) => {

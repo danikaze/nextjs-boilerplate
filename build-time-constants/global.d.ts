@@ -4,9 +4,6 @@
 /** Example of a value available in the whole application */
 declare const GLOBAL_EXAMPLE: string;
 
-/** Absolute path to the locales url */
-declare const LOCALES_URL: string;
-
 /**
  * - `true`: SSR is optimized delivering only the needed i18n namespaces
  * - `false`: SSG is enabled

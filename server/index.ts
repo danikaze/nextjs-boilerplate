@@ -1,4 +1,4 @@
-const { getConstants } = require('../build-time-constants');
+const { getConstants } = require('../build-tools/build-time-constants');
 const { run } = require('./server');
 
 /*
