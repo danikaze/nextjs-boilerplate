@@ -1,4 +1,4 @@
-import { NextPage } from 'next';
+import { AppPage } from './_app';
 import Head from 'next/Head';
 import { HelloWorld, Props as HelloWorldProps } from '@components/hello-world';
 import { testUtil } from '@utils/test';
@@ -6,7 +6,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { store } from '@store';
 import { counterSelector } from '@store/model/counter/selectors';
 import { decreaseCount, increaseCount, setCount } from '@store/actions/counter';
-
+import {
+  Lang,
+  availableLangs,
+  changeLang,
+  getCurrentLanguage,
+} from '@utils/i18n';
 import styles from '@styles/Home.module.css';
 
 function usePage() {
@@ -14,18 +19,31 @@ function usePage() {
 
   return {
     count: useSelector(counterSelector),
+    currentLang: getCurrentLanguage(),
+    langList: availableLangs(),
     increase: () => dispatch(increaseCount()),
     decrease: () => dispatch(decreaseCount()),
+    changeLang: (lang: Lang) => changeLang(lang), //dispatch(setLang(lang)),
   };
 }
 
-const Home: NextPage = () => {
-  const { count, increase, decrease } = usePage();
+const Home: AppPage = () => {
+  const {
+    count,
+    increase,
+    decrease,
+    currentLang,
+    langList,
+    changeLang,
+  } = usePage();
 
   const props: HelloWorldProps = {
     count,
+    currentLang,
+    langList,
     onIncrease: increase,
     onDecrease: decrease,
+    onLangChang: changeLang,
   };
 
   if (testUtil(true)) {
@@ -46,6 +64,10 @@ const Home: NextPage = () => {
       <div>PRODUCTION: {IS_PRODUCTION ? 'true' : 'false'}</div>
     </div>
   );
+};
+
+Home.defaultProps = {
+  namespacesRequired: ['hello-world'],
 };
 
 // initialize the store depending on request data

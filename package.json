@@ -27,6 +27,7 @@
     "cookie-parser": "^1.4.5",
     "express": "^4.17.1",
     "next": "9.5.3",
+    "next-i18next": "^6.0.3",
     "next-redux-wrapper": "^6.0.2",
     "react": "16.13.1",
     "react-dom": "16.13.1",

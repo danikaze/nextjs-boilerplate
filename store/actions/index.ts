@@ -1,5 +1,5 @@
-import { CounterAction } from './counter';
 import { HydrateAction } from './hydrate';
+import { CounterAction } from './counter';
 
 export interface AppAction {
   type: string;
