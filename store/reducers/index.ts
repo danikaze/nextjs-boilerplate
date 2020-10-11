@@ -2,8 +2,8 @@ import { combineReducers, Reducer } from 'redux';
 import { HYDRATE } from 'next-redux-wrapper';
 import { State } from '@store/model';
 import { Action } from '@store/actions';
-import { counterReducer } from './counter';
 import { hydrateReducer } from './hydrate';
+import { counterReducer } from './counter';
 
 const combinedReducer = combineReducers<State, Action>({
   count: counterReducer,

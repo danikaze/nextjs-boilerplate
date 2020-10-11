@@ -1,3 +1,4 @@
+import { ActionCreator } from '@store';
 import { AppAction } from '.';
 
 export type CounterAction =
@@ -17,26 +18,20 @@ export interface DecreaseCounterAction extends AppAction {
   payload: Promise<void>;
 }
 
-export function setCount(n: number): SetCounterAction {
-  return {
-    type: 'SET_COUNT',
-    payload: n,
-  };
-}
+export const setCount: ActionCreator<SetCounterAction> = (n: number) => ({
+  type: 'SET_COUNT',
+  payload: n,
+});
 
-export function increaseCount(): IncreaseCounterAction {
-  return {
-    type: 'INCREASE_COUNT',
-  };
-}
+export const increaseCount: ActionCreator<IncreaseCounterAction> = () => ({
+  type: 'INCREASE_COUNT',
+});
 
 // decrease has a delay to test that promises work correctly
-export function decreaseCount(): DecreaseCounterAction {
-  return {
-    type: 'DECREASE_COUNT',
-    payload: new Promise<void>((resolve) => {
-      const DELAY = 500;
-      setTimeout(resolve, DELAY);
-    }),
-  };
-}
+export const decreaseCount: ActionCreator<DecreaseCounterAction> = () => ({
+  type: 'DECREASE_COUNT',
+  payload: new Promise<void>((resolve) => {
+    const DELAY = 500;
+    setTimeout(resolve, DELAY);
+  }),
+});
