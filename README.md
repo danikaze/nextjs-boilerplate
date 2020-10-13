@@ -8,8 +8,8 @@ A boilerplate to use in projects with NextJs and TypeScript.
 
 ### Ready
 
-- TypeScript support
-- TypeScript source path aliases support
+- TypeScript support (with path aliases support)
+- [Debug](https://nextjs.org/docs/advanced-features/debugging) in vscode ready
 - [Prettier](https://prettier.io/)
 - [Linting](https://palantir.github.io/tslint/)
 - [Git hooks](https://github.com/typicode/husky)
@@ -66,6 +66,12 @@ npm install
 - Add the union of all the added aliases to the `no-implicit-dependencies` rule in the [tslint.yaml](./tslint.yaml) file.
 
 ## Development notes
+
+### Debugging
+
+While running `npm run dev`, just hit `F5` in vscode and it will attach automatically to the nextjs server process, making breakpoints available.
+
+Alternatively you can also debug in chrome just going to [chrome://inspect](chrome://inspect)
 
 ### Redux
 
