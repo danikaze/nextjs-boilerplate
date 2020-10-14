@@ -27,7 +27,7 @@ function usePage() {
   };
 }
 
-const Home: AppPage = () => {
+const Home: AppPage = ({ logger }) => {
   const {
     count,
     increase,
@@ -45,6 +45,8 @@ const Home: AppPage = () => {
     onDecrease: decrease,
     onLangChang: changeLang,
   };
+
+  logger.info('Page rendered');
 
   if (testUtil(true)) {
     props.saluteWho = 'you';
