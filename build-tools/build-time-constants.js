@@ -17,6 +17,7 @@ const gitRevisionPlugin = new GitRevisionPlugin();
 
 module.exports = { getConstants, getBuildTimeConstantsPlugins };
 
+const LOGGER_CONFIG_PATH = join(__dirname, '../logger.config.js');
 const CONSTANTS_PATH = join(__dirname, '../build-time-constants');
 const LOCALES_PATH = join(__dirname, '../public/static/locales');
 const LOCALES_URL = '/static/locales';
@@ -42,10 +43,13 @@ function getBuildTimeConstantsPlugins(buildData) {
 }
 
 function getConstants({ type, buildId, dev, isServer }) {
-  const constants = getFiles(type).reduce((res, filePath) => {
-    const fileData = require(filePath);
-    return { ...res, ...fileData };
-  }, {});
+  const constants = getFiles(isServer ? 'server' : 'client').reduce(
+    (res, filePath) => {
+      const fileData = require(filePath);
+      return { ...res, ...fileData };
+    },
+    {}
+  );
 
   allConstants[type] = {
     ...constants,
@@ -58,9 +62,10 @@ function getConstants({ type, buildId, dev, isServer }) {
     COMMIT_HASH_SHORT: gitRevisionPlugin.commithash().substr(0, 7),
     LOCALES_URL: LOCALES_URL,
     AVAILABLE_LANGUAGES: getAvailableLanguages(LOCALES_PATH),
+    LOGGER_CONFIG: getLoggerConfig(!dev, isServer),
   };
 
-  if (/server/.test(type)) {
+  if (isServer) {
     allConstants[type].PROJECT_ROOT = join(__dirname, '..');
     allConstants[type].LOCALES_PATH = LOCALES_PATH;
   }
@@ -92,10 +97,6 @@ function stringify(data) {
 }
 
 function getFiles(type) {
-  if (/server/.test(type)) {
-    // load the same files for the server and custom-server
-    type = 'server';
-  }
   const files = ['global', 'global-secret', type, `${type}-secret`];
 
   return files
@@ -109,6 +110,8 @@ function printConstants(type) {
   Object.entries(printableTable).forEach(([key, value]) => {
     if (Array.isArray(value)) {
       printableTable[key] = `[${value.join(',')}]`;
+    } else if (typeof value === 'object') {
+      printableTable[key] = JSON.stringify(value);
     }
   });
   console.table(printableTable);
@@ -127,6 +130,27 @@ function getAvailableLanguages(localesPath) {
 
   availableLangs = list;
   return list;
+}
+
+function getLoggerConfig(isProduction, isServer) {
+  if (!existsSync(LOGGER_CONFIG_PATH)) return {};
+
+  try {
+    const module = require(LOGGER_CONFIG_PATH);
+    const config = typeof module === 'function' ? module(isProduction) : module;
+
+    if (!isServer) {
+      // remove server logger options so they are not
+      // filtered into the client side
+      delete config.outputFolder;
+      delete config.outputFile;
+      delete config.maxFiles;
+    }
+
+    return config;
+  } catch (e) {
+    throw new Error('Invalid logger.config.js provided');
+  }
 }
 
 function addLangTypeDefinition(availableLangs) {

@@ -6,27 +6,35 @@ import { store } from '@store';
 import { appWithTranslation } from '@utils/i18n';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { CssBaseline } from '@material-ui/core';
+import { getLogger, globalLogger, Logger, NsLogger } from '@utils/logger';
 import { theme } from '@themes';
 
 import '@styles/globals.css';
 
 export type AppPage<P = {}, IP = P> = NextPage<
-  P & WithI18nNamespaces,
-  IP & WithI18nNamespaces
+  P & AppPageProps,
+  IP & AppPageProps
 >;
-interface WithI18nNamespaces {
+interface AppPageProps {
   namespacesRequired?: string[];
+  logger: NsLogger;
 }
 interface WithInitialProps {
   getInitialProps?: NextComponentType<AppContext>['getInitialProps'];
 }
 
-const App: FunctionComponent<NextAppProps> = ({ Component, pageProps }) => {
+const App: FunctionComponent<NextAppProps<AppPageProps>> = ({
+  Component,
+  pageProps,
+}) => {
   useEffect(() => {
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector('#jss-server-side');
     jssStyles?.parentElement!.removeChild(jssStyles);
   }, []);
+
+  const loggerNamespace = `${Component.displayName || Component.name}Page`;
+  (pageProps as AppPageProps).logger = getLogger(loggerNamespace);
 
   return (
     <>
@@ -38,10 +46,12 @@ const App: FunctionComponent<NextAppProps> = ({ Component, pageProps }) => {
         />
         <meta name="theme-color" content={theme.palette.primary.main} />
       </Head>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Component {...pageProps} />
-      </ThemeProvider>
+      <Logger.Provider value={globalLogger}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <Component {...pageProps} />
+        </ThemeProvider>
+      </Logger.Provider>
     </>
   );
 };

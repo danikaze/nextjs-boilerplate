@@ -21,11 +21,11 @@ A boilerplate to use in projects with NextJs and TypeScript.
   - [redux-immutable-state-invariant](https://github.com/leoasis/redux-immutable-state-invariant)
 - [Material-UI](https://material-ui.com/) with [tree shaking](https://material-ui.com/guides/minimizing-bundle-size/)
 - i18n ([internationalization](https://github.com/isaachinman/next-i18next))
+- Isomorphic [server](https://github.com/winstonjs/winston) and client logs
 
 ### Planned
 
 - Server settings read from filesystem
-- Isomorphic server and client logs
 - Migrate to [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint)
 - Unit testing
 - Visual regression testing
@@ -180,3 +180,53 @@ By default this workaround is enabled, but it might be a good idea to disable it
 
 - Your localized data is small, or there's not much difference in loading all namespaces.
 - There's not much dynamic data and it's worth to have SSG instead of SSR.
+
+### Logging
+
+This setup provides isomorphic logging, meaning that the same code is available in server and client side for simplicity.
+
+When a logging call is executed in server side, it will be outputted to the [logs](./logs) folder (or any configured transport). If the same line is executed in client side, it will be outputted in the browser console. That is, depending on the log call level and the provided options.
+
+Since different logging libraries provide different logging levels, and somewhat it's confusing on how to use them, this setup takes an opinionated approach and defines it here (however, feel free to use them in the way it better fits your needs):
+
+| method  | priority | usage                                                                 |
+| ------- | -------- | --------------------------------------------------------------------- |
+| error   | 0        | errors affecting the operation/service                                |
+| warn    | 1        | recuperable error or unexpected things                                |
+| info    | 2        | processes taking place (start, stop, etc.) to follow the app workflow |
+| verbose | 3        | detailed info, not important                                          |
+| debug   | 4        | debug messages                                                        |
+
+By default, each page will receive a field `logger` in their props, initialized with a namespace like `FoobarPage` if the page is called `Foobar`.
+
+You can define get extra namespaces just calling the hook `useLogger('namespace')` from your components anytime, defined in [./utils/logger](./utils/logger/index.ts).
+
+Usually only one global logger would be used in an app, and its options can be customized by editing [logger.config.js](./logger.config.js) (interface and default values are [specified here](./utils/logger/index.ts)), but if required, you can wrap other parts of your code with `Logger` component (a `React.Provider`) since the `useLogger` hook will access the deeper one, meaning you can do things like this:
+
+```ts
+const Page: AppPage({ logger }) => {
+  logger.info('Page rendered');
+
+  return (
+    <Logger value={new IsomorphicLogger(customLoggerConfiguration)}>
+      <Component />
+    </Logger>
+  )
+}
+
+const Component = () => {
+  const logger = useLogger('Component');
+  logger.info('This will be logged with the custom logger');
+
+  return (
+    <div>Component contents</div>
+  );
+}
+```
+
+Because we want to use the logger outside the react components as well, not always can it be retrieved as a hook. For that, there's also the `getLogger(namespace)` function, which will use always the [global logger configuration](./logger.config.js) but it's accessible everywhere.
+
+```ts
+const logger = getLogger('API');
+logger.debug('This debug line is for code outside react');
+```

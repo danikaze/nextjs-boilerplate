@@ -1,5 +1,10 @@
 {
-  "watch": ["server", "build-time-constants", "build-tools"],
+  "watch": [
+    "server",
+    "build-time-constants",
+    "build-tools",
+    "logger.config.js"
+  ],
   "ignore": ["build-time-constants/build.d.ts"],
   "exec": "ts-node --project server/tsconfig.json --files server/index.ts",
   "ext": "js ts",
