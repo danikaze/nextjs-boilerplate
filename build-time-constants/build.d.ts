@@ -24,3 +24,5 @@ declare const LOCALES_URL: string;
 declare const AVAILABLE_LANGUAGES: AVAILABLE_LANGUAGE_TYPE[];
 /** List of available i18n languages (auto-generated from LOCALES_PATH) */
 type AVAILABLE_LANGUAGE_TYPE = 'en' | 'es';
+/** Configuration from logger.config.js */
+declare const LOGGER_CONFIG: {};
