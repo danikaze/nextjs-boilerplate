@@ -5,9 +5,8 @@ export const IsomorphicLogger: IsomorphicLoggerConstructor = IS_SERVER
   ? require('./private/server').ServerLogger
   : require('./private/client').ClientLogger;
 
-export const Logger = createContext<IsomorphicLogger>(
-  new IsomorphicLogger(LOGGER_CONFIG)
-);
+export const globalLogger = new IsomorphicLogger(LOGGER_CONFIG);
+export const Logger = createContext<IsomorphicLogger>(globalLogger);
 Logger.displayName = 'Logger';
 
 export interface IsomorphicLoggerConstructor {
@@ -121,4 +120,14 @@ export interface NsLogger {
 export function useLogger(namespace: string): NsLogger {
   const logger = useContext(Logger);
   return logger!.getLogger(namespace);
+}
+
+/**
+ * This works the same way as useLogger, but can be called outside React because
+ * it's not using hooks.
+ * It will always return a logger with the global logger configuration from
+ * `logger.config.js`
+ */
+export function getLogger(namespace: string): NsLogger {
+  return globalLogger.getLogger(namespace);
 }

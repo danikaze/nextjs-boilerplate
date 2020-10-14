@@ -223,3 +223,10 @@ const Component = () => {
   );
 }
 ```
+
+Because we want to use the logger outside the react components as well, not always can it be retrieved as a hook. For that, there's also the `getLogger(namespace)` function, which will use always the [global logger configuration](./logger.config.js) but it's accessible everywhere.
+
+```ts
+const logger = getLogger('API');
+logger.debug('This debug line is for code outside react');
+```
