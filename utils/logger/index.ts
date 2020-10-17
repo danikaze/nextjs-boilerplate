@@ -53,6 +53,12 @@ export interface LoggerOptions {
    */
   disableColors?: boolean;
   /**
+   * If `false`, the timestamp won't be added in the log messages
+   *
+   * Default: `true`
+   */
+  addTimestamp?: boolean;
+  /**
    * Folder where to write the logs files (server side only)
    * It is required if `outputFile` is defined
    *

@@ -34,18 +34,21 @@ export class ClientLogger {
   private readonly silent: boolean;
   private readonly level: LoggerLevel;
   private readonly colors: (string | undefined)[];
+  private readonly addTimestamp: boolean;
   private readonly nsLoggers: { [namespace: string]: NsLogger } = {};
 
   constructor(options?: ClientLoggerOptions) {
-    const opt = {
+    const opt: Required<ClientLoggerOptions> = {
       level: (IS_PRODUCTION ? 'error' : 'debug') as LoggerLevel,
       silent: false,
       console: true,
       disableColors: false,
+      addTimestamp: true,
       ...options,
     };
     this.silent = opt.silent || !opt.console;
     this.level = opt.level;
+    this.addTimestamp = opt.addTimestamp;
     this.colors = opt.disableColors
       ? [undefined, undefined, undefined, undefined]
       : [levelFormats[opt.level], undefined, 'color: grey', undefined];
@@ -80,9 +83,9 @@ export class ClientLogger {
     }
 
     const method = levelMethods[level];
-    const time = new Date();
+    const time = this.addTimestamp ? `${new Date().toISOString()} ` : '';
     console[method](
-      `${time.toISOString()} [%c${level}%c | %c${namespace}%c]`,
+      `${time}[%c${level}%c | %c${namespace}%c]`,
       ...this.colors,
       ...msgs
     );

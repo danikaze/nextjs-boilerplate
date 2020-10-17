@@ -5,7 +5,13 @@
  * The interface for this config object and default values can be found in
  * [utils/logger/index.ts]
  *
- * Exporting a function is also possible, and it will accept a boolean set
- * to `true` if the environment is production, `false` if development
+ * Exporting a function is also possible, and it will accept two boolean
+ * params defining if the configuration is for a production or development
+ * environment, and if it's for server or client
+ * ```
+ * (isProduction: boolean, isServer: boolean) => LoggerOptions
+ * ```
  */
-module.exports = (isProduction) => ({});
+module.exports = (isProduction, isServer) => ({
+  addTimestamp: isServer,
+});

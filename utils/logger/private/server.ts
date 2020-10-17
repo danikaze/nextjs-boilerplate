@@ -37,6 +37,7 @@ export class ServerLogger {
       silent: false,
       console: true,
       disableColors: false,
+      addTimestamp: true,
       outputFolder: 'logs',
       outputFile: '%DATE%.log',
       maxFiles: 30,
@@ -111,8 +112,10 @@ export class ServerLogger {
       return `${time}[${level} | ${ns}] ${message}`;
     });
 
-    const formats: Format[] = options.disableColors ? [] : [format.colorize()];
-    formats.push(format.timestamp(), customFormat);
+    const formats: Format[] = [];
+    if (options.disableColors) formats.push(format.colorize());
+    if (options.addTimestamp) formats.push(format.timestamp());
+    formats.push(customFormat);
 
     return format.combine(...formats);
   }
