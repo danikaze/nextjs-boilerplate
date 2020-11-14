@@ -2,10 +2,9 @@ import express from 'express';
 import compress from 'compression';
 import cookieParser from 'cookie-parser';
 import next from 'next';
+import { useAuth } from './auth';
 
-module.exports = { run };
-
-function run() {
+export function run() {
   const port = Number(process.env.PORT || '3000');
   const app = next({ dev: !IS_PRODUCTION });
   const handle = app.getRequestHandler();
@@ -14,6 +13,12 @@ function run() {
   server.disable('x-powered-by');
   server.use(compress());
   server.use(cookieParser());
+  server.use(express.urlencoded({ extended: false }));
+  server.use(express.json());
+
+  if (AUTH_ENABLED) {
+    useAuth(server);
+  }
 
   app.prepare().then(() => {
     // server.get('/customRoute', (req, res) => {

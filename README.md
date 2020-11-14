@@ -22,6 +22,7 @@ A boilerplate to use in projects with NextJs and TypeScript.
 - [Material-UI](https://material-ui.com/) with [tree shaking](https://material-ui.com/guides/minimizing-bundle-size/)
 - i18n ([internationalization](https://github.com/isaachinman/next-i18next))
 - Isomorphic [server](https://github.com/winstonjs/winston) and client logs
+- [Authentication](http://www.passportjs.org/)
 
 ### Planned
 
@@ -61,9 +62,8 @@ npm install
 
 ### TypeScript path aliases
 
-- For path aliases to be available in the main process, edit the [main/tsconfig.json](./main/tsconfig.json) file.
-- For path aliases to be available in the renderer process, edit the [renderer/tsconfig.json](./renderer/tsconfig.json) file.
-- Add the union of all the added aliases to the `no-implicit-dependencies` rule in the [tslint.yaml](./tslint.yaml) file.
+- Edit the [main/tsconfig.json](./tsconfig.json) file with the path aliases to be available.
+- Add them also to the `no-implicit-dependencies` rule in the [tslint.yaml](./tslint.yaml) file.
 
 ## Development notes
 
@@ -164,7 +164,7 @@ For this, localizations are split in namespaces (manually, depending on your app
 
 Because the new data fetching method (from NextJS 9) [getServerSideProps](https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering) is [not fully supported](https://github.com/isaachinman/next-i18next/issues/652), if a page requires dynamic initial props, there's the need to apply a workaround, which disables SSG ([Static Site Generation](https://nextjs.org/blog/next-9-3#next-gen-static-site-generation-ssg-support)) making every page to work with SSR ([Server Side Rendering](https://nextjs.org/docs/basic-features/pages#server-side-rendering)).
 
-This workaround is optional (to be applied in build time or not), and can be enabled or disabled in [global.js] changing the value of `ENABLE_I18N_OPTIMIZED_NAMESPACES`.
+This workaround is optional (to be applied in build time or not), and can be enabled or disabled in [global.js] changing the value of `I18N_OPTIMIZED_NAMESPACES_ENABLED`.
 
 If set to `true`:
 
@@ -230,3 +230,49 @@ Because we want to use the logger outside the react components as well, not alwa
 const logger = getLogger('API');
 logger.debug('This debug line is for code outside react');
 ```
+
+### Authentication
+
+Most web-apps require some kind of user authentication, and this boilerplate provides everything you need to set it up, based on [passport](http://www.passportjs.org/).
+
+#### Configuration
+
+To enable authentication, just make sure `AUTH_ENABLED` is `true` in the [build-time-constants](build-time-constants/global.js).
+
+There are other values that can be customized:
+
+| Constant                        | Notes                                                                                                          |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| AUTH_LOCAL_DO_LOGIN_URL         | The URL receiving the `username` and `password` and setting the necessary values such as session cookies, etc. |
+| AUTH_LOCAL_SUCCESS_PAGE         | The URL where the user is redirected after a successfully login attempt                                        |
+| AUTH_LOCAL_FAIL_PAGE            | The URL where the user is redirected after a failed login attempt                                              |
+| AUTH_LOCAL_LOGIN_REDIRECT_PARAM | Parameter used (if defined) to provide the original URL for a redirection on a login success                   |
+| AUTH_LOCAL_LOGOUT_PAGE          | The URL where the user can clear its credentials                                                               |
+
+##### Local Strategy
+
+Local strategy is nothing more than applying a custom way of checking the user status, usually through a database, retrieving the user data and checking if the provided password checks at the login time. Then, in each request if the user exists, we just check its permission level.
+
+In this example, the [User model](model/user.ts) is identified by its `username` and an `id` field. It has a `password`, stored using a `salt` value for better security via [scrypt](https://nodejs.org/api/crypto.html#crypto_crypto_scrypt_password_salt_keylen_options_callback).
+
+Because this boilerplate is agnostic on the used database, it's using mock-data defined in the [strategy configuration file](server/auth/strategies/local.ts), and the point **1** where the user data is retrieved, should be replaced with the proper implementation.
+
+When checking the username and password, the strategy relies on those values coming from a form with that field names: `username` and `password`, as shown in the [Login form](components/login-form.tsx).
+
+##### Other Strategies
+
+Because passport is ready to be used, other authentication strategies such as Twitter, Facebook or Google can be easily integrated as well, just adding them to the [express server](server/auth/index.ts).
+
+#### Usage
+
+Pages you want to protect require `getServerSideProps`. This will disable your SSG but it's something logic to happen if you want the rendering to depend on the actual permissions of the current user.
+
+The `request` object provided by the [context object](https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering) received in the `getServerSideProps` function will have a `user` property set to `false` if the user is not logged in, or the set object in the configured previously.
+
+The boilerplate example comes with a defined [User model](model/user.ts) containing several data, but only information related to `{ id, username, role }` is provided in the authentication cookie -encrypted- (it doesn't do a call to the model to retrieve that information in that request, but just read the encoded cookie), which is the minimum required to make it work. If more information is required, you can retrieve it from your model.
+
+If based on the values the user should not have access to the page, the request can be redirected to other URL.
+
+_**NOTE:** With Next 9 you will get an Error because at this point, the headers have already been sent, but it still will work. From [Next 10](https://github.com/vercel/next.js/discussions/14890) you will be able to return a `redirect` object that will fix this. The error is only displayed in the console, and not in production mode._
+
+_**NOTE:** A different approach can also be chosen without using `getServerSideProps` if it's OK to show the (empty) page to a user without credentials if the data is actually secure (fetched with a protected API)._

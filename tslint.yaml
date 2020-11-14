@@ -423,6 +423,7 @@ rules:
     - dev
     # Our custom aliases/absolute-pathes
     - - '@components'
+      - '@model'
       - '@store'
       - '@styles'
       - '@themes'
