@@ -17,6 +17,8 @@
     "paths": {
       "@components": ["components"],
       "@components/*": ["components/*"],
+      "@model": ["model"],
+      "@model/*": ["model/*"],
       "@store": ["store"],
       "@store/*": ["store/*"],
       "@styles": ["styles"],
