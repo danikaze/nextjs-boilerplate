@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "nodemon",
     "build": "NODE_ENV=production next build && tsc --project server/tsconfig.json",
-    "start": "NODE_ENV=production node ./dist/index.js",
+    "start": "NODE_ENV=production node ./dist/server/index.js",
     "test": "npm run lint-nextjs && npm run lint-custom-server",
     "lint-nextjs": "tslint -p tsconfig.json -c tslint.yaml",
     "lint-custom-server": "tslint -p server/tsconfig.json -c tslint.yaml",
