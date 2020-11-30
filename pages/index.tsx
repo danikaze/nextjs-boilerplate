@@ -1,5 +1,5 @@
 import { AppPage } from './_app';
-import Head from 'next/Head';
+import Head from 'next/head';
 import { HelloWorld, Props as HelloWorldProps } from '@components/hello-world';
 import { testUtil } from '@utils/test';
 import { useDispatch, useSelector } from 'react-redux';
