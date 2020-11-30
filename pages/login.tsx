@@ -17,7 +17,7 @@ const Login: AppPage<Props, Props> = ({ redirect }) => {
       </Head>
 
       <main className={styles.main}>
-        <LoginForm redirect={redirect} />
+        <LoginForm redirect={redirect} twitter />
       </main>
       <div>PRODUCTION: {IS_PRODUCTION ? 'true' : 'false'}</div>
     </div>

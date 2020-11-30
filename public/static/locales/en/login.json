@@ -2,5 +2,7 @@
   "loginTitle": "Log In",
   "username": "Username",
   "password": "Password",
-  "signInButton": "Sign In"
+  "signInButton": "Sign In",
+  "signInWithService": "Or use one of the following services to sign in with:",
+  "signInWithTwitter": "Sign in with Twitter"
 }

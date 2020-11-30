@@ -81,6 +81,9 @@ declare const AUTH_FORBIDDEN_PAGE: string;
  */
 declare const AUTH_LOCAL_DO_LOGIN_URL: string;
 
+/** Route to authenticate via Twitter (will redirect to Twitter) */
+declare const AUTH_TWITTER_LOGIN_PAGE: string;
+
 /*
  * Data from global-secret.js
  */
