@@ -4,7 +4,8 @@
     "build-time-constants",
     "build-tools",
     "logger.config.js",
-    "tsconfig.json"
+    "tsconfig.json",
+    "public/static/locales"
   ],
   "ignore": ["build-time-constants/build.d.ts"],
   "exec": "ts-node --project server/tsconfig.json --files server/index.ts",
