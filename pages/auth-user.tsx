@@ -1,5 +1,5 @@
 import { GetServerSideProps } from 'next';
-import Head from 'next/Head';
+import Head from 'next/head';
 import Link from 'next/link';
 import { userRequired } from '@utils/auth';
 import styles from '@styles/Home.module.css';

@@ -3,7 +3,7 @@ import React, { FunctionComponent, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { NextComponentType, NextPage } from 'next';
 import NextApp, { AppContext, AppProps as NextAppProps } from 'next/app';
-import Head from 'next/Head';
+import Head from 'next/head';
 import { store } from '@store';
 import { appWithTranslation } from '@utils/i18n';
 import { ThemeProvider } from '@material-ui/core/styles';
