@@ -1,51 +1,14 @@
 import { RequestHandler, Router } from 'express';
 import { default as passport } from 'passport';
 import { Strategy } from 'passport-local';
-import { User } from '../../../model/user';
-import { encryptPassword, encryptPasswordSync } from '../../../model/auth';
+import { authLocalUser } from '../../../model/auth';
 import { addUrlParam } from '../../../utils/url';
 
-/*
- * This is just a mockup for the Database of Users
- * To be replaced with the real model
- */
-const UserDB: User[] = [
-  {
-    id: 1,
-    username: 'admin',
-    role: 'admin',
-    salt: '0123456789abcdef',
-    password: encryptPasswordSync('pass', '0123456789abcdef'),
-  },
-  {
-    id: 2,
-    username: 'user',
-    role: 'user',
-    salt: '1234567890123456',
-    password: encryptPasswordSync('pass', '1234567890123456'),
-  },
-];
-
 export const strategy = new Strategy(async (username, password, done) => {
-  // 1. Find the user in the database
-  // TODO: Replace with the real model instead of mock-data
-  const lcUser = username.toLowerCase();
-  const user = UserDB.find((u) => u.username.toLowerCase() === lcUser);
-  if (!user) return done(null, false);
-
-  // 2. Encode the provided password with its salt
   try {
-    const pwd = await encryptPassword(password, user.salt);
-    // 3. Check if the encoded(provided password)
-    // is the same as the provided password
-    if (pwd !== user.password) return done(null, false);
-
-    // if ok, return the UserAuthData
-    return done(null, {
-      id: user.id,
-      username: user.username,
-      role: user.role,
-    });
+    const user = await authLocalUser(username, password);
+    if (!user) return done(null, false);
+    return done(null, user);
   } catch (err) {
     return done(err, false);
   }

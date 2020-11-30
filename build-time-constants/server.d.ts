@@ -17,8 +17,13 @@ declare const LOCALES_PATH: string;
  */
 declare const SERVER_DEFAULT_PORT: number;
 
+/** Callback for twitter authentication strategy */
+declare const AUTH_TWITTER_CALLBACK_ABS_URL: string;
+
 /*
  * Data from server-secret.js
  */
-/** Example of a secret value available for the server-side code */
-declare const SERVER_SECRET_EXAMPLE: string;
+/** Twitter API key used for authentication */
+declare const AUTH_TWITTER_API_KEY: string;
+/** Twitter API key secret used for authentication */
+declare const AUTH_TWITTER_API_KEY_SECRET: string;

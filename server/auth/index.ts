@@ -2,8 +2,15 @@ import express from 'express';
 import session from 'cookie-session';
 import { default as passport } from 'passport';
 import { sync as uid } from 'uid-safe';
-import { strategy as localStrategy, authRoutes } from './strategies/local';
 import { deserializeUser, serializeUser } from './user-serialization';
+import {
+  strategy as localStrategy,
+  authRoutes as localAuthRoutes,
+} from './strategies/local';
+import {
+  strategy as twitterStrategy,
+  authRoutes as twitterAuthRoutes,
+} from './strategies/twitter';
 
 /**
  * Set up a Express server to use authentication via PassportJS
@@ -22,6 +29,9 @@ export function useAuth(server: express.Express): void {
 
   // strategy setup
   passport.use(localStrategy);
+  if (twitterStrategy) {
+    passport.use(twitterStrategy);
+  }
 
   // user serialization
   passport.serializeUser(serializeUser);
@@ -31,5 +41,10 @@ export function useAuth(server: express.Express): void {
   server.use(session(sessionConfig));
   server.use(passport.initialize());
   server.use(passport.session());
-  server.use(authRoutes);
+
+  // auth routes
+  server.use(localAuthRoutes);
+  if (twitterAuthRoutes) {
+    server.use(twitterAuthRoutes);
+  }
 }

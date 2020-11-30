@@ -1,22 +1,53 @@
-import { scrypt, scryptSync } from 'crypto';
+import { Profile } from 'passport';
+import { encryptPassword } from '../utils/crypt';
+import { User, UserAuthData } from './user';
+import { LocalUserDB, TwitterUserDB, UserDB } from './user-mock';
 
-const KEY_LEN = 64;
+export async function getUserAuthData(
+  id: number | User
+): Promise<UserAuthData | undefined> {
+  const user = typeof id === 'number' ? UserDB.find((u) => u.id === id) : id;
+  if (!user) return;
 
-export async function encryptPassword(
-  pass: string,
-  salt: string
-): Promise<string> {
-  return new Promise<string>((resolve, reject) => {
-    scrypt(pass, salt, KEY_LEN, (err, pwd) => {
-      if (err) {
-        reject(err);
-        return;
-      }
-      resolve(pwd.toString());
-    });
+  return {
+    id: user.id,
+    username: user.username,
+    role: user.role,
+  };
+}
+
+export async function authLocalUser(
+  username: string,
+  password: string
+): Promise<UserAuthData | undefined> {
+  return new Promise(async (resolve) => {
+    // 1. Find the user in the database
+    // TODO: Replace with the real model instead of mock-data
+    const lcUser = username.toLowerCase();
+    const user = LocalUserDB.find((u) => u.username.toLowerCase() === lcUser);
+    if (!user) return resolve(undefined);
+
+    // 2. Encode the provided password with its salt
+    const pwd = await encryptPassword(password, user.salt);
+    // 3. Check if the encoded(provided password)
+    // is the same as the provided password
+    if (pwd !== user.password) return resolve(undefined);
+
+    // 4. if ok, return the UserAuthData
+    resolve(await getUserAuthData(user.userId));
   });
 }
 
-export function encryptPasswordSync(pass: string, salt: string): string {
-  return scryptSync(pass, salt, KEY_LEN).toString();
+export async function authTwitterUser(
+  profile: Profile
+): Promise<UserAuthData | undefined> {
+  return new Promise(async (resolve) => {
+    // 1. Find the user in the database
+    // TODO: Replace with the real model instead of mock-data
+    const user = TwitterUserDB.find((u) => u.profileId === profile.id);
+    if (!user) return resolve(undefined);
+
+    // 2. if ok, return the UserAuthData
+    resolve(await getUserAuthData(user.userId));
+  });
 }

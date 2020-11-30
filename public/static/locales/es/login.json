@@ -2,5 +2,7 @@
   "loginTitle": "Iniciar sesión",
   "username": "Usuario",
   "password": "Contraseña",
-  "signInButton": "Entrar"
+  "signInButton": "Entrar",
+  "signInWithService": "O usa uno de estos servicios para entrar:",
+  "signInWithTwitter": "Entrar con una cuenta de Twitter"
 }
