@@ -24,6 +24,10 @@ const Login: AppPage<Props, Props> = ({ redirect }) => {
   );
 };
 
+Login.defaultProps = {
+  namespacesRequired: ['login'],
+};
+
 Login.getInitialProps = (ctx) => {
   return {
     redirect: ctx.query.r as string | undefined,
