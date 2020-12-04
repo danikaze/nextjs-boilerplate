@@ -1,18 +1,18 @@
 import { IncomingMessage } from 'http';
 import React, { FunctionComponent, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { NextComponentType, NextPage } from 'next';
 import NextApp, { AppContext, AppProps as NextAppProps } from 'next/app';
 import Head from 'next/head';
 import { store } from '@store';
 import { appWithTranslation } from '@utils/i18n';
+import { useUserData } from '@utils/auth';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { CssBaseline } from '@material-ui/core';
 import { getLogger, globalLogger, Logger, NsLogger } from '@utils/logger';
 import { theme } from '@themes';
 import { UserAuthData } from '@model/user';
 import { setUser } from '@store/actions/user';
-import { userSelector } from '@store/model/user/selectors';
 
 import '@styles/globals.css';
 
@@ -120,7 +120,7 @@ export default appWithTranslation(ReduxApp as FunctionComponent<NextAppProps>);
  */
 function initUserForClientSideNavigation(pageProps: AppPageProps): void {
   const dispatch = useDispatch();
-  const user = useSelector(userSelector);
+  const user = useUserData();
 
   // user data was already in the State which means this is client navigation
   // just copy the data from the state into the page initial props, so it's
