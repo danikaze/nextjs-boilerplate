@@ -106,10 +106,11 @@ export function adminRequired(
 }
 
 /**
- * This function can be used inside `getServerSideProps` (just calling
- * it with the context is enough) or as a express middleware, and it will
- * redirect to the `LOGIN_PAGE` if the user is not logged-in or it hasn't the
- * correct role
+ * This function can be used inside `getServerSideProps` (just calling it
+ * with the context is enough) or as a express middleware, and it will
+ * redirect to the `LOGIN_PAGE` if the user is not logged-in. If logged in
+ * but it hasn't the correct role, a 401 Forbidden status will be triggered.
+ * In this case a redirection to `AUTH_FORBIDDEN_PAGE` will happen if defined.
  */
 function roleRequired(
   role: string[],
@@ -131,7 +132,15 @@ function roleRequired(
 
   if (!role.includes(user.role)) {
     logger.info(`Blocked: Wrong role user when tried to access ${originalUrl}`);
-    res.sendStatus(HTTP_FORBIDDEN);
+    try {
+      if (AUTH_FORBIDDEN_PAGE) {
+        res.redirect(AUTH_FORBIDDEN_PAGE);
+      } else {
+        res.sendStatus(HTTP_FORBIDDEN);
+      }
+    } catch (err) {
+      res.sendStatus(HTTP_FORBIDDEN);
+    }
     res.end();
     return true;
   }
