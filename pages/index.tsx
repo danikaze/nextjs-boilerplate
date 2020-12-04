@@ -1,6 +1,7 @@
 import { AppPage } from './_app';
 import Head from 'next/head';
 import { HelloWorld, Props as HelloWorldProps } from '@components/hello-world';
+import { ExampleNavBar } from '@components/example-nav-bar';
 import { testUtil } from '@utils/test';
 import { useDispatch, useSelector } from 'react-redux';
 import { store } from '@store';
@@ -53,18 +54,21 @@ const Home: AppPage = ({ logger }) => {
   }
 
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>
-          {PACKAGE_NAME} - {PACKAGE_VERSION} ({COMMIT_HASH_SHORT})
-        </title>
-      </Head>
+    <>
+      <ExampleNavBar />
+      <div className={styles.container}>
+        <Head>
+          <title>
+            {PACKAGE_NAME} - {PACKAGE_VERSION} ({COMMIT_HASH_SHORT})
+          </title>
+        </Head>
 
-      <main className={styles.main}>
-        <HelloWorld {...props} />
-      </main>
-      <div>PRODUCTION: {IS_PRODUCTION ? 'true' : 'false'}</div>
-    </div>
+        <main className={styles.main}>
+          <HelloWorld {...props} />
+        </main>
+        <div>PRODUCTION: {IS_PRODUCTION ? 'true' : 'false'}</div>
+      </div>
+    </>
   );
 };
 
