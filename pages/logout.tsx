@@ -1,9 +1,10 @@
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
+import { useSelector } from 'react-redux';
+import { ExampleNavBar } from '@components/example-nav-bar';
 import styles from '@styles/Home.module.css';
 import { userSelector } from '@store/model/user/selectors';
-import { useSelector } from 'react-redux';
 import { logoutRequired } from '@utils/auth';
 import { AppPage } from './_app';
 
@@ -41,31 +42,22 @@ const Logout: AppPage = () => {
   ));
 
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>
-          {PACKAGE_NAME} - {PACKAGE_VERSION} ({COMMIT_HASH_SHORT})
-        </title>
-      </Head>
+    <>
+      <ExampleNavBar />
+      <div className={styles.container}>
+        <Head>
+          <title>
+            {PACKAGE_NAME} - {PACKAGE_VERSION} ({COMMIT_HASH_SHORT})
+          </title>
+        </Head>
 
-      <main className={styles.main}>
-        <h3>Logged out</h3>
-        {info}
-
-        <div>
-          <Link href="/auth">
-            <a>[all]</a>
-          </Link>
-          <Link href="/auth-user">
-            <a>[user only]</a>
-          </Link>
-          <Link href="/auth-admin">
-            <a>[admin only]</a>
-          </Link>
-        </div>
-      </main>
-      <div>PRODUCTION: {IS_PRODUCTION ? 'true' : 'false'}</div>
-    </div>
+        <main className={styles.main}>
+          <h3>Logged out</h3>
+          {info}
+        </main>
+        <div>PRODUCTION: {IS_PRODUCTION ? 'true' : 'false'}</div>
+      </div>
+    </>
   );
 };
 
