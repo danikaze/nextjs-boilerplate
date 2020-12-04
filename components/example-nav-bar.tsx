@@ -1,9 +1,8 @@
 import { FunctionComponent } from 'react';
+import Link from 'next/link';
 import { AppBar, Toolbar, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import Link from 'next/link';
-import { useSelector } from 'react-redux';
-import { userSelector } from '@store/model/user/selectors';
+import { useUserData } from '@utils/auth';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -16,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const ExampleNavBar: FunctionComponent = () => {
   const classes = useStyles();
-  const isLoggedIn = useSelector(userSelector);
+  const isLoggedIn = useUserData() !== null;
 
   const LoginLink = isLoggedIn ? (
     <Link href="/logout">

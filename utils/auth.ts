@@ -1,7 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { GetServerSidePropsContext } from 'next';
+import { useSelector } from 'react-redux';
 import { UserAuthData } from '@model/user';
 import { getLogger } from './logger';
+import { userSelector } from '@store/model/user/selectors';
+import { UserState } from '@store/model/user';
 
 const HTTP_FORBIDDEN = 401;
 const logger = getLogger('auth');
@@ -10,6 +13,14 @@ interface RequestData {
   req: Request;
   res: Response;
   user: UserAuthData;
+}
+
+/**
+ * Hook that returns the available user data in the redux store
+ * or `null` if undefined
+ */
+export function useUserData(): UserState {
+  return useSelector(userSelector);
 }
 
 /**
