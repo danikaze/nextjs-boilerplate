@@ -11,6 +11,7 @@
     "../build-time-constants/build.d.ts",
     "../build-time-constants/global.d.ts",
     "../build-time-constants/server.d.ts",
+    "../utils/set-build-time-constants.ts",
     "./**/*.ts"
   ],
   "exclude": ["node_modules"]
