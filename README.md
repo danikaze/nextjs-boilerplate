@@ -237,31 +237,58 @@ Most web-apps require some kind of user authentication, and this boilerplate pro
 
 #### Configuration
 
-To enable authentication, just make sure `AUTH_ENABLED` is `true` in the [build-time-constants](build-time-constants/global.js).
+To enable authentication, just make sure `AUTH_ENABLED` is `true` in the [build-time-constants](./build-time-constants/global.js).
 
 There are other values that can be customized:
 
-| Constant                        | Notes                                                                                                          |
-| ------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| AUTH_LOCAL_DO_LOGIN_URL         | The URL receiving the `username` and `password` and setting the necessary values such as session cookies, etc. |
-| AUTH_LOCAL_SUCCESS_PAGE         | The URL where the user is redirected after a successfully login attempt                                        |
-| AUTH_LOCAL_FAIL_PAGE            | The URL where the user is redirected after a failed login attempt                                              |
-| AUTH_LOCAL_LOGIN_REDIRECT_PARAM | Parameter used (if defined) to provide the original URL for a redirection on a login success                   |
-| AUTH_LOCAL_LOGOUT_PAGE          | The URL where the user can clear its credentials                                                               |
+| Constant                  | Notes                                                                                                                                                                                                                                                               |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AUTH_LOGIN_SUCCESS_PAGE   | The URL where the user is redirected after a successfully login attempt                                                                                                                                                                                             |
+| AUTH_LOGIN_FAIL_PAGE      | The URL where the user is redirected after a failed login attempt                                                                                                                                                                                                   |
+| AUTH_LOGOUT_PAGE          | The URL where the user is notified that their credentials are cleared ([logout](./pages/logout.tsx) is provided by default, but can be changed and/or customized)                                                                                                   |
+| AUTH_DO_LOGOUT_URL        | This is the page that will clear all user credentials and redirect to `AUTH_LOGOUT_PAGE` (only the URL needs to be defined, the [page itself is already provided](./server/auth/strategies/local.ts))                                                               |
+| AUTH_LOGIN_REDIRECT_PARAM | Parameter used (if defined) to provide the original URL for a redirection on a login success (currently [only working for the local strategy](https://github.com/danikaze/nextjs-boilerplate/issues/13))                                                            |
+| AUTH_FORBIDDEN_PAGE       | When a logged-in user doesn't have enough permissions to access a page, it's redirected here (if set). If this is not set, a HTTP 401 Unauthorized error is sent. ([forbidden](./pages/forbidden.tsx) is provided by default, but can be changed and/or customized) |
 
 ##### Local Strategy
 
 Local strategy is nothing more than applying a custom way of checking the user status, usually through a database, retrieving the user data and checking if the provided password checks at the login time. Then, in each request if the user exists, we just check its permission level.
 
-In this example, the [User model](model/user.ts) is identified by its `username` and an `id` field. It has a `password`, stored using a `salt` value for better security via [scrypt](https://nodejs.org/api/crypto.html#crypto_crypto_scrypt_password_salt_keylen_options_callback).
+In this example, the [User model](./model/user.ts) is identified by its `username` and an `id` field. It has a `password`, stored using a `salt` value for better security via [scrypt](https://nodejs.org/api/crypto.html#crypto_crypto_scrypt_password_salt_keylen_options_callback).
 
 Because this boilerplate is agnostic on the used database, it's using mock-data defined in the [strategy configuration file](server/auth/strategies/local.ts), and the point **1** where the user data is retrieved, should be replaced with the proper implementation.
 
 When checking the username and password, the strategy relies on those values coming from a form with that field names: `username` and `password`, as shown in the [Login form](components/login-form.tsx).
 
+Customizable [constants](./build-time-constants/global.js) are:
+
+| Constant                | Notes                                                                                                                                                                                                                                                         |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AUTH_LOCAL_DO_LOGIN_URL | This is the page that will receive the `username` and `password` parameters via `POST`, and redirects to `AUTH_SUCCESS_PAGE` or `AUTH_FAIL_PAGE` (only the URL needs to be defined, the [page itself is already provided](./server/auth/strategies/local.ts). |
+
+##### Twitter Strategy
+
+This is an example of using an external service to authenticate your users. This especifically uses [passport-twitter](https://github.com/jaredhanson/passport-twitter) for it, and requires to set some constants as well:
+
+In [global.d.ts](./build-time-constants/global.d.ts):
+
+| Constant                | Notes                                                                                |
+| ----------------------- | ------------------------------------------------------------------------------------ |
+| AUTH_TWITTER_LOGIN_PAGE | Local route that will redirect to the twitter one when initializing the auth process |
+
+In [server.d.ts](./build-time-constants/server.d.ts):
+
+| Constant                      | Notes                                                             |
+| ----------------------------- | ----------------------------------------------------------------- |
+| AUTH_TWITTER_CALLBACK_ABS_URL | Route that will process the result when authenticated via twitter |
+| AUTH_TWITTER_API_KEY          | Your [App](https://developer.twitter.com/) API Key                |
+| AUTH_TWITTER_API_KEY_SECRET   | Your [App](https://developer.twitter.com/) API Key Secret         |
+
+Make sure to place the values for `AUTH_TWITTER_API_KEY` and `AUTH_TWITTER_API_KEY_SECRET` in the [server-secret.js](./build-time-constants/server-secret.js) file instead of [server.js](./build-time-constants/server.js) so they won't be commited to the repository.
+
 ##### Other Strategies
 
-Because passport is ready to be used, other authentication strategies such as Twitter, Facebook or Google can be easily integrated as well, just adding them to the [express server](server/auth/index.ts).
+Because passport is ready to be used, other authentication strategies such as [Github](https://github.com/cfsghost/passport-github), [Facebook](https://github.com/jaredhanson/passport-facebook) or [Google](https://github.com/jaredhanson/passport-google) among others, can be easily integrated as well just adding them to the [express server](./server/auth/index.ts) the same way it's done for [Twitter](./server/auth/strategies/twitter).
 
 #### Usage
 
@@ -269,7 +296,7 @@ Pages you want to protect require `getServerSideProps`. This will disable your S
 
 The `request` object provided by the [context object](https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering) received in the `getServerSideProps` function will have a `user` property set to `false` if the user is not logged in, or the set object in the configured previously.
 
-The boilerplate example comes with a defined [User model](model/user.ts) containing several data, but only information related to `{ id, username, role }` is provided in the authentication cookie -encrypted- (it doesn't do a call to the model to retrieve that information in that request, but just read the encoded cookie), which is the minimum required to make it work. If more information is required, you can retrieve it from your model.
+The boilerplate example comes with a defined [User model](./model/user.ts) containing several data, but only information related to `{ id, username, role }` is provided in the authentication cookie -encrypted- (it doesn't do a call to the model to retrieve that information in that request, but just read the encoded cookie), which is the minimum required to make it work. If more information is required, you can retrieve it from your model.
 
 If based on the values the user should not have access to the page, the request can be redirected to other URL.
 
