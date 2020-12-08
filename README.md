@@ -23,12 +23,15 @@ A boilerplate to use in projects with NextJs and TypeScript.
 - i18n ([internationalization](https://github.com/isaachinman/next-i18next))
 - Isomorphic [server](https://github.com/winstonjs/winston) and client logs
 - [Authentication](http://www.passportjs.org/)
+- Testing, run by [Jest](https://jestjs.io/)
+  - Unit testing (with [Jest](https://jestjs.io/) and [Sinon](https://sinonjs.org/))
+  - Code coverage [Istanbul](by https://istanbul.js.org/)
 
 ### Planned
 
 - Server settings read from filesystem
 - Migrate to [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint)
-- Unit testing
+- Component testing
 - Visual regression testing
 
 ## Setup
@@ -303,3 +306,23 @@ If based on the values the user should not have access to the page, the request 
 _**NOTE:** With Next 9 you will get an Error because at this point, the headers have already been sent, but it still will work. From [Next 10](https://github.com/vercel/next.js/discussions/14890) you will be able to return a `redirect` object that will fix this. The error is only displayed in the console, and not in production mode._
 
 _**NOTE:** A different approach can also be chosen without using `getServerSideProps` if it's OK to show the (empty) page to a user without credentials if the data is actually secure (fetched with a protected API)._
+
+### Testing
+
+Unit testing uses [Jest](https://jestjs.io/en) as a test runner. It also provides [assertion](https://jestjs.io/docs/en/expect) and [mock functions](https://jestjs.io/docs/en/mock-functions), but [Sinon](https://sinonjs.org/) is also available.
+
+Executing `npm run test` will run all the tests and the linter, while `npm run test-debug` will keep jest running in `watch` mode and code can be inspected attaching the debugger to the process (`F5` in Visual Code, or browsing to `chrome://inspect`, etc.).
+
+To run only one test, it can be passed as a parameter (or some by usign globs). Just remember that you need to append `--` to pass them when running `npm run`
+
+```
+npm run test -- utils/__test/auth.spec.ts
+```
+
+Every file named as `.spec.ts`, `.spec.tsx`, `.test.ts` or `.test.tsx` will be considered as test cases and loaded when running the tests, and by convention they are usually placed inside a [\_\_test](./utils/__test) folder where the feature is located.
+
+When running the tests, a `.coverage` folder will be created (but not included in the repository) using [Istanbul](https://istanbul.js.org/), which you can use to check which part of your code is missing testing by browsing the [html reports](./.coverage/lcov-report/index.html).
+
+Because tests add a `IS_TEST` [global build-time constant](./build-time-constants/build.d.ts), it's used to disable logging and prevent polluting the output when running the tests.
+
+Note that because this repository already provides a [travis-ci configuration](./.travis.yml), you only need to enable your repository in your account to start checking your code sanity with each commit without further work (travis executes `npm run test` by default for [NodeJS projects](https://docs.travis-ci.com/user/languages/javascript-with-nodejs/#default-build-script)).

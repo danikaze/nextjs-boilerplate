@@ -51,7 +51,7 @@ export class ClientLogger {
     const opt: Required<ClientLoggerOptions> = {
       level: (IS_PRODUCTION ? 'error' : 'debug') as LoggerLevel,
       silent: false,
-      console: true,
+      console: !(IS_PRODUCTION || IS_TEST),
       disableColors: false,
       addTimestamp: true,
       ...options,

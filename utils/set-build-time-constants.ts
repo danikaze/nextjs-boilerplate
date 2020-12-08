@@ -2,6 +2,7 @@ interface SetBuildTimeConstantsOptions {
   type: 'client' | 'server' | 'custom-server';
   dev: boolean;
   isServer: boolean;
+  isTest?: boolean;
 }
 
 /*

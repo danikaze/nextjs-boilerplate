@@ -2,7 +2,6 @@ import { AppPage } from './_app';
 import Head from 'next/head';
 import { HelloWorld, Props as HelloWorldProps } from '@components/hello-world';
 import { ExampleNavBar } from '@components/example-nav-bar';
-import { testUtil } from '@utils/test';
 import { useDispatch, useSelector } from 'react-redux';
 import { store } from '@store';
 import { counterSelector } from '@store/model/counter/selectors';
@@ -48,10 +47,6 @@ const Home: AppPage = ({ logger }) => {
   };
 
   logger.info('Page rendered');
-
-  if (testUtil(true)) {
-    props.saluteWho = 'you';
-  }
 
   return (
     <>

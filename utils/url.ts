@@ -22,9 +22,8 @@ export function addUrlParams(base: string, params: KeyValueMap): string {
   const keys = Object.keys(params);
   let result = base;
 
-  for (let i = 1; i < keys.length; i++) {
-    const k = keys[i];
-    result = addUrlParam(result, keys[i], params[k]);
+  for (const k of keys) {
+    result = addUrlParam(result, k, params[k]);
   }
 
   return result;

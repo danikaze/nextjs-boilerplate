@@ -16,7 +16,7 @@ rules:
   max-line-length:
     - true
     - limit: 80
-      ignore-pattern: '(^import )|(new RegExp)|( = \/|https?:\/\/)|(^ \* \|)'
+      ignore-pattern: '(^import )|(new RegExp)|(^\s*it\()|( = \/|https?:\/\/)|(^ \* \|)'
       # last pattern is for comments with markdown tables
 
   # https://palantir.github.io/tslint/rules/file-name-casing/
@@ -426,5 +426,6 @@ rules:
       - '@model'
       - '@store'
       - '@styles'
+      - '@test'
       - '@themes'
       - '@utils'

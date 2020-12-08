@@ -42,7 +42,7 @@ function getBuildTimeConstantsPlugins(buildData) {
   return plugins;
 }
 
-function getConstants({ type, buildId, dev, isServer }) {
+function getConstants({ type, buildId, dev, isServer, isTest }) {
   const constants = getFiles(isServer ? 'server' : 'client').reduce(
     (res, filePath) => {
       const fileData = require(filePath);
@@ -55,6 +55,7 @@ function getConstants({ type, buildId, dev, isServer }) {
     ...constants,
     IS_PRODUCTION: !dev,
     IS_SERVER: isServer,
+    IS_TEST: !!isTest,
     BUILD_ID: getBuildId(buildId, dev),
     PACKAGE_NAME: packageJson.name,
     PACKAGE_VERSION: packageJson.version,
@@ -62,7 +63,7 @@ function getConstants({ type, buildId, dev, isServer }) {
     COMMIT_HASH_SHORT: gitRevisionPlugin.commithash().substr(0, 7),
     LOCALES_URL: LOCALES_URL,
     AVAILABLE_LANGUAGES: getAvailableLanguages(LOCALES_PATH),
-    LOGGER_CONFIG: getLoggerConfig(!dev, isServer),
+    LOGGER_CONFIG: getLoggerConfig(!dev, isServer, isTest),
   };
 
   if (isServer) {
@@ -70,7 +71,7 @@ function getConstants({ type, buildId, dev, isServer }) {
     allConstants[type].LOCALES_PATH = LOCALES_PATH;
   }
 
-  if (dev) {
+  if (dev && !isTest) {
     printConstants(type);
   }
 
@@ -132,12 +133,15 @@ function getAvailableLanguages(localesPath) {
   return list;
 }
 
-function getLoggerConfig(isProduction, isServer) {
+function getLoggerConfig(isProduction, isServer, isTest) {
   if (!existsSync(LOGGER_CONFIG_PATH)) return {};
 
   try {
     const module = require(LOGGER_CONFIG_PATH);
-    const config = typeof module === 'function' ? module(isProduction) : module;
+    const config =
+      typeof module === 'function'
+        ? module(isProduction, isServer, isTest)
+        : module;
 
     if (!isServer) {
       // remove server logger options so they are not
