@@ -18,6 +18,8 @@ declare const BUILD_ID: string;
 declare const IS_PRODUCTION: boolean;
 /** Env constant set to `true` when executed in server side */
 declare const IS_SERVER: boolean;
+/** Env constant set to `true` when executed by tests */
+declare const IS_TEST: boolean;
 /** Absolute path to the locales url */
 declare const LOCALES_URL: string;
 /** List of available languages (folders) from the LOCALES_PATH */

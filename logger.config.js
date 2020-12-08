@@ -9,9 +9,9 @@
  * params defining if the configuration is for a production or development
  * environment, and if it's for server or client
  * ```
- * (isProduction: boolean, isServer: boolean) => LoggerOptions
+ * (isProduction: boolean, isServer: boolean, isTest: boolean) => LoggerOptions
  * ```
  */
-module.exports = (isProduction, isServer) => ({
+module.exports = (isProduction, isServer, isTest) => ({
   addTimestamp: isServer,
 });

@@ -35,7 +35,7 @@ export class ServerLogger {
     const opt: Required<LoggerOptions> = {
       level: IS_PRODUCTION ? 'error' : 'debug',
       silent: false,
-      console: true,
+      console: !(IS_PRODUCTION || IS_TEST),
       disableColors: false,
       addTimestamp: true,
       outputFolder: 'logs',

@@ -23,6 +23,8 @@
       "@store/*": ["store/*"],
       "@styles": ["styles"],
       "@styles/*": ["styles/*"],
+      "@test": ["test"],
+      "@test/*": ["test/*"],
       "@themes": ["themes"],
       "@themes/*": ["themes/*"],
       "@utils": ["utils"],

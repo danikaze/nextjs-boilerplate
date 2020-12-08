@@ -38,7 +38,7 @@ export interface LoggerOptions {
   /**
    * Enables logging to the console (client + server side)
    *
-   * Default: `true`
+   * Default: `false` in production or tests, `true` in develop mode
    */
   console?: boolean;
   /**
