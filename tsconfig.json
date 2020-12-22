@@ -15,6 +15,8 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
+      "@assets": ["assets"],
+      "@assets/*": ["assets/*"],
       "@components": ["components"],
       "@components/*": ["components/*"],
       "@model": ["model"],

@@ -5,7 +5,8 @@
     "build-tools",
     "logger.config.js",
     "tsconfig.json",
-    "public/static/locales"
+    "public/static/locales",
+    "next.config.js"
   ],
   "ignore": ["build-time-constants/build.d.ts"],
   "exec": "ts-node --project server/tsconfig.json --files server/index.ts",
