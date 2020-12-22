@@ -3,6 +3,7 @@
  */
 import { createLogger, transports, format, Logger as Winston } from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
+import { join } from 'path';
 import { grey } from 'chalk';
 import { NsLogger, LoggerOptions, LoggerLevel } from '..';
 
@@ -69,7 +70,11 @@ export class ServerLogger {
           dirname: options.outputFolder,
           filename: options.outputFile,
           maxFiles: options.maxFiles,
-          auditFile: `.audit-${new Date().toISOString()}`,
+          auditFile: join(
+            options.outputFolder,
+            'audit',
+            `.audit-${new Date().toISOString()}`
+          ),
         })
       );
     }
