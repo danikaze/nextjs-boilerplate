@@ -13,6 +13,8 @@ import {
   getCurrentLanguage,
 } from '@utils/i18n';
 import styles from '@styles/Home.module.css';
+import catImage from '@assets/images/cat.jpg';
+import pixelCatImage from '@assets/images/pixel-cat.png';
 
 function usePage() {
   const dispatch = useDispatch();
@@ -47,6 +49,8 @@ const Home: AppPage = ({ logger }) => {
   };
 
   logger.info('Page rendered');
+  const INLINE_IMAGE_WIDTH = 80;
+  const FILE_IMAGE_WIDTH = 200;
 
   return (
     <>
@@ -58,8 +62,14 @@ const Home: AppPage = ({ logger }) => {
           </title>
         </Head>
 
-        <main className={styles.main}>
+        <main className={styles.main} title="This image is loaded inline">
+          <img src={pixelCatImage} width={INLINE_IMAGE_WIDTH} />
           <HelloWorld {...props} />
+          <img
+            src={catImage}
+            width={FILE_IMAGE_WIDTH}
+            title="This image is loaded from a file"
+          />
         </main>
         <div>PRODUCTION: {IS_PRODUCTION ? 'true' : 'false'}</div>
       </div>

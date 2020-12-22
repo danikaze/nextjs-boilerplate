@@ -1,24 +1,17 @@
-const {
-  getBuildTimeConstantsPlugins,
-} = require('./build-tools/build-time-constants');
+const withFiles = require('./build-tools/with-files');
+const withConstants = require('./build-tools/with-constants');
 
-module.exports = {
-  webpack: (config, { buildId, dev, isServer, webpack }) => {
-    if (!config.plugins) {
-      config.plugins = [];
-    }
+let config = withConstants();
+config = withFiles({
+  ...config,
+  // inlineImageLimit
+  // imageFileName
+  // outputPath
+  // publicPath
+  // postTransformPublicPath
+  // assetPrefix
+  // basePath
+  // fileExtensions
+});
 
-    // add build-time defined constants
-    config.plugins.push(
-      ...getBuildTimeConstantsPlugins({
-        type: isServer ? 'server' : 'client',
-        buildId,
-        dev,
-        isServer,
-        webpack,
-      })
-    );
-
-    return config;
-  },
-};
+module.exports = config;
