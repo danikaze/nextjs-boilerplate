@@ -14,7 +14,6 @@ export interface LogoutUserAction extends AppAction {
 }
 
 export const setUser: ActionCreator<SetUserAction> = (user: UserState) => ({
-  // tslint:disable:ter-indent
   type: 'SET_USER',
   payload: !user
     ? null
