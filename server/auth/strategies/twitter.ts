@@ -4,8 +4,6 @@ import { Strategy } from 'passport-twitter';
 import { authTwitterUser } from '../../../model/auth';
 import { createUserFromTwitter } from '../../../model/user';
 
-// tslint:disable: ter-indent
-
 export const twitterEnabled = (() => {
   try {
     return (
