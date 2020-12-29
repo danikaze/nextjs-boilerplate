@@ -7,6 +7,9 @@ const i18next = new NextI18Next({
   fallbackLng: 'en',
   otherLanguages: AVAILABLE_LANGS,
   localePath: IS_SERVER ? LOCALES_PATH : LOCALES_URL,
+  detection: {
+    lookupCookie: 'i18nlang',
+  },
 });
 
 export type Lang = AVAILABLE_LANGUAGE_TYPE;
