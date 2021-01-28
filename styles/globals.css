@@ -1,3 +1,6 @@
+/**
+ * CSS globals imported by pages/_app.tsx
+ */
 html,
 body {
   padding: 0;
