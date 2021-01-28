@@ -1,10 +1,9 @@
-import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { adminRequired } from '@utils/auth';
 import { ExampleNavBar } from '@components/example-nav-bar';
 import { UserInfo } from '@components/user-info';
 import styles from '@styles/Home.module.css';
-import { AppPage } from './_app';
+import { AppPage, GetServerSideProps } from './_app';
 
 const Auth: AppPage = () => {
   return (

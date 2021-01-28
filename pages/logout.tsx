@@ -1,10 +1,9 @@
-import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { ExampleNavBar } from '@components/example-nav-bar';
 import { UserInfo } from '@components/user-info';
 import styles from '@styles/Home.module.css';
 import { logoutRequired } from '@utils/auth';
-import { AppPage } from './_app';
+import { AppPage, GetServerSideProps } from './_app';
 
 const Logout: AppPage = () => {
   return (
