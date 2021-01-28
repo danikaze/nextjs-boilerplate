@@ -317,7 +317,7 @@ Executing `npm run test` will run all the tests and the linter, while `npm run t
 To run only one test, it can be passed as a parameter (or some by usign globs). Just remember that you need to append `--` to pass them when running `npm run`
 
 ```
-npm run test -- utils/__test/auth.spec.ts
+npm run test-only -- utils/__test/auth.spec.ts
 ```
 
 Every file named as `.spec.ts`, `.spec.tsx`, `.test.ts` or `.test.tsx` will be considered as test cases and loaded when running the tests, and by convention they are usually placed inside a [\_\_test](./utils/__test) folder where the feature is located.
