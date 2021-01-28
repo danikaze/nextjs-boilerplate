@@ -1,7 +1,13 @@
+import { ParsedUrlQuery } from 'querystring';
 import { IncomingMessage } from 'http';
 import React, { FunctionComponent, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { NextComponentType, NextPage } from 'next';
+import {
+  GetServerSidePropsContext,
+  GetServerSidePropsResult,
+  NextComponentType,
+  NextPage,
+} from 'next';
 import NextApp, { AppContext, AppProps as NextAppProps } from 'next/app';
 import Head from 'next/head';
 import { store } from '@store';
@@ -22,6 +28,17 @@ interface AppPageProps {
   logger: NsLogger;
   user: UserAuthData | false;
 }
+
+export type GetServerSideProps<
+  // tslint:disable-next-line:no-any
+  P extends { [key: string]: any } = { [key: string]: any },
+  Q extends ParsedUrlQuery = ParsedUrlQuery
+> = (
+  context: GetServerSidePropsContext<Q> & {
+    req: { user: UserAuthData | false };
+  }
+) => Promise<GetServerSidePropsResult<P>>;
+
 interface WithInitialProps {
   getInitialProps?: NextComponentType<AppContext>['getInitialProps'];
 }
