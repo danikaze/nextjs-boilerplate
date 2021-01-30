@@ -1,3 +1,4 @@
+const withBundleAnalyzer = require('@next/bundle-analyzer');
 const withFiles = require('./build-tools/with-files');
 const withConstants = require('./build-tools/with-constants');
 
@@ -13,5 +14,8 @@ config = withFiles({
   // basePath
   // fileExtensions
 });
+config = withBundleAnalyzer({ enabled: process.env.ANALYZE === 'true' })(
+  config
+);
 
 module.exports = config;

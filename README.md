@@ -27,6 +27,7 @@ A boilerplate to use in projects with NextJs and TypeScript.
   - Unit testing (with [Jest](https://jestjs.io/) and [Sinon](https://sinonjs.org/))
   - Code coverage [Istanbul](by https://istanbul.js.org/)
 - Support of static file imports via [url-loader](https://webpack.js.org/loaders/url-loader/) and [file-loader](https://webpack.js.org/loaders/file-loader/)
+- [Bundle Analyzer](https://www.npmjs.com/package/@next/bundle-analyzer)
 
 ### Planned
 
@@ -374,4 +375,12 @@ ProxyPass / http://localhost:EXPRESS_PORT/
 <Proxy *>
   Require all granted
 </Proxy>
+```
+
+### Bundle Analyzer
+
+Just add `ANALYZE=true` in the environment variables to generate the report:
+
+```
+ANALYZE=true npm run build
 ```
