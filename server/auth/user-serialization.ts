@@ -2,7 +2,7 @@ import { UserAuthData } from '@model/user';
 
 /**
  * `serializeUser` is the function user by passport that defines what data is
- * actually stored in the session data. It can be just the `user.id` but we
+ * actually stored in the session data. It can be just the `user.userId` but we
  * are storing its username and roles too, to have them a accessible without
  * hitting the database
  */

@@ -8,12 +8,12 @@ import { User, LocalUser, TwitterUser } from './user';
 
 export const UserDB: User[] = [
   {
-    id: 1,
+    userId: 1,
     username: 'admin',
     role: 'admin',
   },
   {
-    id: 2,
+    userId: 2,
     username: 'user',
     role: 'user',
   },

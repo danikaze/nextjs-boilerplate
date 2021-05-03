@@ -20,7 +20,7 @@ export const setUser: ActionCreator<SetUserAction> = (user: UserState) => ({
     : {
         // all props are manually picked instead of just returning `user`,
         // in case it contains more data that than we want
-        id: user.id,
+        userId: user.userId,
         username: user.username,
         role: user.role,
       },

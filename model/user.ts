@@ -4,23 +4,23 @@ import { TwitterUserDB, UserDB } from './user-mock';
 
 export type UserRole = 'admin' | 'user';
 
-export type UserAuthData = Pick<User, 'id' | 'username' | 'role'>;
+export type UserAuthData = Pick<User, 'userId' | 'username' | 'role'>;
 
 export interface User {
-  id: number;
+  userId: number;
   username: string;
   role: UserRole;
 }
 
 export interface LocalUser {
-  userId: User['id'];
+  userId: User['userId'];
   username: string;
   salt: string;
   password: string;
 }
 
 export interface TwitterUser {
-  userId: User['id'];
+  userId: User['userId'];
   profileId: string;
 }
 
@@ -33,9 +33,10 @@ export async function createUserFromTwitter(
     if (user) return resolve(user);
 
     // if not, create a new one
-    const userId = (UserDB.length === 0 ? 0 : UserDB[UserDB.length - 1].id) + 1;
+    const userId =
+      (UserDB.length === 0 ? 0 : UserDB[UserDB.length - 1].userId) + 1;
     user = {
-      id: userId,
+      userId,
       username: profile.username!,
       role: 'user',
     };

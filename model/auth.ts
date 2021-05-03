@@ -4,13 +4,16 @@ import { User, UserAuthData } from './user';
 import { LocalUserDB, TwitterUserDB, UserDB } from './user-mock';
 
 export async function getUserAuthData(
-  id: number | User
+  userId: number | User
 ): Promise<UserAuthData | undefined> {
-  const user = typeof id === 'number' ? UserDB.find((u) => u.id === id) : id;
+  const user =
+    typeof userId === 'number'
+      ? UserDB.find((u) => u.userId === userId)
+      : userId;
   if (!user) return;
 
   return {
-    id: user.id,
+    userId: user.userId,
     username: user.username,
     role: user.role,
   };
