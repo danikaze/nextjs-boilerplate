@@ -419,7 +419,8 @@ rules:
     - true
     - dev
     # Our custom aliases/absolute-pathes
-    - - '@assets'
+    - - '@api'
+      - '@assets'
       - '@components'
       - '@model'
       - '@store'
