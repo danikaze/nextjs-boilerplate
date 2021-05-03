@@ -1,9 +1,9 @@
 import Head from 'next/head';
 import { ExampleNavBar } from '@components/example-nav-bar';
 import { UserInfo } from '@components/user-info';
-import { userRequired } from '@utils/auth';
+import { userRequiredServerSideProps } from '@utils/auth';
 import styles from '@styles/Home.module.css';
-import { AppPage, GetServerSideProps } from './_app';
+import { AppPage } from './_app';
 
 const Auth: AppPage = () => {
   return (
@@ -26,9 +26,8 @@ const Auth: AppPage = () => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  userRequired(ctx);
-  return { props: {} };
-};
+export const getServerSideProps = userRequiredServerSideProps({}, async () => ({
+  props: {},
+}));
 
 export default Auth;

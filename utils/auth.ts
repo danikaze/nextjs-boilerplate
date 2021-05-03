@@ -1,19 +1,62 @@
-import { Request, Response, NextFunction } from 'express';
-import { GetServerSidePropsContext } from 'next';
+import { IncomingMessage } from 'http';
+import { Request, Response } from 'express';
+import { ParsedUrlQuery } from 'querystring';
+import {
+  GetServerSidePropsContext,
+  GetServerSidePropsResult,
+  NextApiResponse,
+} from 'next';
+import { Env } from 'next/dist/lib/load-env-config';
 import { useSelector } from 'react-redux';
-import { UserAuthData } from '@model/user';
-import { getLogger } from './logger';
 import { userSelector } from '@store/model/user/selectors';
+import { ApiHandler, ApiRequest, ApiResponse, HttpStatus } from '@api';
+import { UserAuthData } from '@model/user';
+import { getLogger } from '@utils/logger';
 import { UserState } from '@store/model/user';
+import { GetServerSideProps } from '../pages/_app';
 
-const HTTP_FORBIDDEN = 401;
-const logger = getLogger('auth');
+export type AuthGetServerSidePropsContext<
+  Q extends ParsedUrlQuery = ParsedUrlQuery
+> = GetServerSidePropsContext<Q> & {
+  req: { user: UserAuthData };
+};
 
-interface RequestData {
-  req: Request;
-  res: Response;
+export type AuthApiHandler<
+  R = void,
+  Q extends {} = {},
+  B extends {} = {},
+  U extends {} = {}
+> = (
+  req: AuthApiRequest<Q & U, B>,
+  res: NextApiResponse<ApiResponse<R>>
+) => void | Promise<void>;
+
+// tslint:disable-next-line: no-any
+type IndexedObject = { [key: string]: any };
+// tslint:disable-next-line: no-any
+type GenericRequest = ApiRequest<any, any>;
+
+type AuthGetServerSideProps<
+  // tslint:disable-next-line:no-any
+  P extends IndexedObject = IndexedObject,
+  Q extends {} = {}
+> = (
+  context: AuthGetServerSidePropsContext<Q & ParsedUrlQuery>
+) => Promise<GetServerSidePropsResult<P>>;
+
+interface AuthApiRequest<Q, B> extends IncomingMessage {
+  query: Q;
+  body: B;
+  cookies: {
+    [key: string]: string;
+  };
   user: UserAuthData;
+  env: Env;
 }
+
+const logger = getLogger('auth');
+const USER_ROLES = ['user', 'admin'];
+const ADMIN_ROLES = ['admin'];
 
 /**
  * Hook that returns the available user data in the redux store
@@ -24,166 +67,205 @@ export function useUserData(): UserState {
 }
 
 /**
- * If called from `getServerSideProps` it will redirect first to
- * `AUTH_LOCAL_DO_LOGOUT_URL` to clear user credentials
- * ```
- * export const getServerSideProps: GetServerSideProps = async (ctx) => {
- *   logoutRequired(ctx);
- *   return {
- *     props: { ... };
- *   };
- * };
- * ```
+ * Wrapper for `getServerSideProps` performing the authentication check first
+ * If the user is not logged-in, it will return `noAuthProps`.
+ * If the user is properly authenticated then `getServerSideProps` will be
+ * called but this time the provided `ctx` is ensured to have `ctx.req.user`
+ * with only `UserAuthData` (no `false` value possible)
  */
-export function logoutRequired(
-  ctx: GetServerSidePropsContext
-): true | undefined;
-export function logoutRequired(
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void;
-export function logoutRequired(
-  req: Request | GetServerSidePropsContext,
-  res?: Response,
-  next?: NextFunction
-): true | undefined {
-  return logoutIfRequired(req, res, next);
+export function userRequiredServerSideProps<
+  P extends IndexedObject = IndexedObject,
+  Q extends {} = {}
+>(
+  noAuthProps: P,
+  getServerSideProps: AuthGetServerSideProps<P, Q>
+): GetServerSideProps<P, Q> {
+  return authRequiredServerSideProps(
+    USER_ROLES,
+    noAuthProps,
+    getServerSideProps
+  );
 }
 
 /**
- * If called from `getServerSideProps` it will forbid non-logged in users
- * redirecting them to the `LOGIN_PAGE` (they will be redirected to the page
- * after login successfully)
- * ```
- * export const getServerSideProps: GetServerSideProps = async (ctx) => {
- *   userRequired(ctx);
- *   return {
- *     props: { ... };
- *   };
- * };
- * ```
+ * Wrapper for `getServerSideProps` performing the authentication check first
+ * If the user is not an admin, it will return `noAuthProps`.
+ * If the user is properly authenticated as an admin, then `getServerSideProps`
+ * will be called but this time the provided `ctx` is ensured to have
+ * `ctx.req.user` with only `UserAuthData` (no `false` value possible)
  */
-export function userRequired(ctx: GetServerSidePropsContext): true | undefined;
-export function userRequired(
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void;
-export function userRequired(
-  req: Request | GetServerSidePropsContext,
-  res?: Response,
-  next?: NextFunction
-): true | undefined {
-  return roleRequired(['user', 'admin'], req, res, next);
+export function adminRequiredServerSideProps<
+  P extends IndexedObject = IndexedObject,
+  Q extends {} = {}
+>(
+  noAuthProps: P,
+  getServerSideProps: AuthGetServerSideProps<P, Q>
+): GetServerSideProps<P, Q> {
+  return authRequiredServerSideProps(
+    ADMIN_ROLES,
+    noAuthProps,
+    getServerSideProps
+  );
 }
 
 /**
- * If called from `getServerSideProps` it will forbid non-logged in users or
- * logged users without the `admin` role, redirecting them to the `LOGIN_PAGE`
- * (they will be redirected to the page after login successfully)
- * ```
- * export const getServerSideProps: GetServerSideProps = async (ctx) => {
- *   adminRequired(ctx);
- *   return {
- *     props: { ... };
- *   };
- * };
- * ```
+ * Wrapper for `getServerSideProps` that redirects to `AUTH_DO_LOGOUT_URL` if
+ * the user is logged in when accesing the page and uses `authProps`.
+ * If the user is not logged in, then it just calls the provided
+ * `getServerSideProps`
  */
-export function adminRequired(ctx: GetServerSidePropsContext): true | undefined;
-export function adminRequired(
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void;
-export function adminRequired(
-  req: Request | GetServerSidePropsContext,
-  res?: Response,
-  next?: NextFunction
-): true | undefined {
-  return roleRequired(['admin'], req, res, next);
-}
+export function logoutRequiredServerSideProps<
+  P extends IndexedObject = IndexedObject,
+  Q extends {} = {}
+>(
+  authProps: P,
+  getServerSideProps: GetServerSideProps<P, Q>
+): GetServerSideProps<P, Q> {
+  return (ctx) => {
+    const res = ctx.res as Response;
+    const user = ctx.req.user;
 
-/**
- * This function can be used inside `getServerSideProps` (just calling it
- * with the context is enough) or as a express middleware, and it will
- * redirect to the `LOGIN_PAGE` if the user is not logged-in. If logged in
- * but it hasn't the correct role, a 401 Forbidden status will be triggered.
- * In this case a redirection to `AUTH_FORBIDDEN_PAGE` will happen if defined.
- */
-function roleRequired(
-  role: string[],
-  a: Request | GetServerSidePropsContext,
-  b?: Response,
-  next?: NextFunction
-): true | undefined {
-  const { req, res, user } = getRequestData(a, b);
-  const { originalUrl } = req;
-
-  if (!user) {
-    logger.info(`Blocked: Non logged user when tried to access ${originalUrl}`);
-    res.redirect(
-      `${AUTH_LOGIN_PAGE}?${AUTH_LOGIN_REDIRECT_PARAM}=${originalUrl}`
-    );
-    res.end();
-    return true;
-  }
-
-  if (!role.includes(user.role)) {
-    logger.info(`Blocked: Wrong role user when tried to access ${originalUrl}`);
-    try {
-      if (AUTH_FORBIDDEN_PAGE) {
-        res.redirect(AUTH_FORBIDDEN_PAGE);
-      } else {
-        res.sendStatus(HTTP_FORBIDDEN);
-      }
-    } catch (err) {
-      res.sendStatus(HTTP_FORBIDDEN);
+    if (user) {
+      logger.info(`Redirecting user to the logout page`);
+      res.redirect(AUTH_DO_LOGOUT_URL);
+      res.end();
+      return Promise.resolve({ props: authProps });
     }
-    res.end();
-    return true;
-  }
 
-  typeof next === 'function' && next();
+    return getServerSideProps(ctx);
+  };
 }
 
 /**
- * This function can be used inside `getServerSideProps` (just calling
- * it with the context is enough) or as a express middleware, and it will
- * redirect to the `AUTH_LOCAL_DO_LOGOUT_URL` to effectively clear user
- * credentials if the user is logged-in
+ * Wrapper for API handler that performs authentication check first, ensuring
+ * that `apiHandler` will be called only when the user is properly
+ * authenticated or returning a 401 FORBIDDEN error otherwhise.
+ *
+ * When `apiHandler` is called, the provided `req.user` object is guaranteed
+ * to have user data
  */
-function logoutIfRequired(
-  a: Request | GetServerSidePropsContext,
-  b?: Response,
-  next?: NextFunction
-): true | undefined {
-  const { res, user } = getRequestData(a, b);
-
-  if (user) {
-    logger.info(`Redirecting user to the logout page`);
-    res.redirect(`${AUTH_DO_LOGOUT_URL}`);
-    res.end();
-    return true;
-  }
-
-  typeof next === 'function' && next();
+export function userRequiredApiHandler<
+  R = void,
+  Q extends {} = {},
+  B extends {} = {},
+  U extends {} = {}
+>(apiHandler: AuthApiHandler<R, Q, B, U>): ApiHandler<R, Q, B, U> {
+  return ((req, res) => {
+    if (!apiUserWithoutRole(USER_ROLES, req, res)) return;
+    return apiHandler(req as AuthApiRequest<Q & U, B>, res);
+  }) as ApiHandler<R, Q, B, U>;
 }
 
 /**
- * Get the Request, the Response and the User data from parameters accepting
- * the ones from `getServerSideProps` or the ones as a express middleware
+ * Wrapper for API handler that performs authentication check first, ensuring
+ * that `apiHandler` will be called only when the user is properly
+ * authenticated as an admin or returning a 401 FORBIDDEN error otherwhise.
+ *
+ * When `apiHandler` is called, the provided `req.user` object is guaranteed
+ * to have user data
  */
-function getRequestData(
-  a: Request | GetServerSidePropsContext,
-  b?: Response
-): RequestData {
-  const req = ((a as GetServerSidePropsContext).req!
-    ? (a as GetServerSidePropsContext).req
-    : a) as Request;
-  const user = req.user as UserAuthData;
-  const res = (a.res ? a.res : b) as Response;
+export function adminRequiredApiHandler<
+  R = void,
+  Q extends {} = {},
+  B extends {} = {},
+  U extends {} = {}
+>(apiHandler: AuthApiHandler<R, Q, B, U>): ApiHandler<R, Q, B, U> {
+  return ((req, res) => {
+    if (!apiUserWithoutRole(ADMIN_ROLES, req, res)) return;
+    return apiHandler(req as AuthApiRequest<Q & U, B>, res);
+  }) as ApiHandler<R, Q, B, U>;
+}
 
-  return { req, res, user };
+/**
+ * Check that a user is properly logged
+ */
+export function isUser(user: UserAuthData | false): boolean {
+  return user && USER_ROLES.includes(user.role);
+}
+
+/**
+ * Check that a user is logged as an admin role
+ */
+export function isAdmin(user: UserAuthData | false): boolean {
+  return user && ADMIN_ROLES.includes(user.role);
+}
+
+function authRequiredServerSideProps<P, Q>(
+  role: string[],
+  noAuthProps: P,
+  getServerSideProps: AuthGetServerSideProps<P, Q>
+): GetServerSideProps<P, Q> {
+  return (ctx) => {
+    const res = ctx.res as Response;
+    const user = ctx.req.user;
+    const originalUrl = ((ctx.req as unknown) as Request).originalUrl;
+
+    if (!user) {
+      logger.info(
+        `Blocked: Non logged user when tried to access ${originalUrl}`
+      );
+      res.redirect(
+        `${AUTH_LOGIN_PAGE}?${AUTH_LOGIN_REDIRECT_PARAM}=${originalUrl}`
+      );
+      res.end();
+      return Promise.resolve({ props: noAuthProps });
+    }
+
+    if (!role.includes(user.role)) {
+      logger.info(
+        `Blocked: Wrong role user when tried to access ${originalUrl}`
+      );
+      try {
+        if (AUTH_FORBIDDEN_PAGE) {
+          res.redirect(AUTH_FORBIDDEN_PAGE);
+        } else {
+          res.sendStatus(HttpStatus.HTTP_FORBIDDEN);
+        }
+      } catch (err) {
+        res.sendStatus(HttpStatus.HTTP_FORBIDDEN);
+      }
+      res.end();
+      return Promise.resolve({ props: noAuthProps });
+    }
+
+    return getServerSideProps(
+      ctx as Parameters<AuthGetServerSideProps<P, Q>>[0]
+    );
+  };
+}
+
+function apiUserWithoutRole(
+  role: string[],
+  req: GenericRequest,
+  res: NextApiResponse
+): boolean {
+  const user = req.user;
+  const originalUrl = ((req as unknown) as Request).originalUrl;
+
+  // user not logged
+  if (!user) {
+    logger.info(`Blocked: Not authenticated when accessing API ${originalUrl}`);
+    res.status(HttpStatus.HTTP_FORBIDDEN);
+    res.json({
+      error: true,
+      msg: 'Forbidden',
+    });
+    res.end();
+    return false;
+  }
+
+  // user logged and auth
+  if (role.includes(user.role)) return true;
+
+  // user logged but requested role not found
+  logger.info(
+    `Blocked: Not enough permissions when accessing API ${originalUrl}`
+  );
+  res.status(HttpStatus.HTTP_FORBIDDEN);
+  res.json({
+    error: true,
+    msg: 'Forbidden',
+  });
+  res.end();
+  return false;
 }

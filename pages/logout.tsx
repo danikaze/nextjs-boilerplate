@@ -1,9 +1,9 @@
 import Head from 'next/head';
 import { ExampleNavBar } from '@components/example-nav-bar';
 import { UserInfo } from '@components/user-info';
+import { logoutRequiredServerSideProps } from '@utils/auth';
 import styles from '@styles/Home.module.css';
-import { logoutRequired } from '@utils/auth';
-import { AppPage, GetServerSideProps } from './_app';
+import { AppPage } from './_app';
 
 const Logout: AppPage = () => {
   return (
@@ -26,14 +26,10 @@ const Logout: AppPage = () => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  logoutRequired(ctx);
-
-  return {
-    props: {
-      user: false,
-    },
-  };
-};
+const props = { user: false };
+export const getServerSideProps = logoutRequiredServerSideProps(
+  props,
+  async () => ({ props })
+);
 
 export default Logout;
