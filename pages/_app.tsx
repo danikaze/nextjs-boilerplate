@@ -3,7 +3,7 @@ import { IncomingMessage } from 'http';
 import React, { FunctionComponent, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import {
-  GetServerSidePropsContext,
+  GetServerSidePropsContext as GSSPCtx,
   GetServerSidePropsResult,
   NextComponentType,
   NextPage,
@@ -29,14 +29,18 @@ interface AppPageProps {
   user: UserAuthData | false;
 }
 
+export type GetServerSidePropsContext<
+  Q extends ParsedUrlQuery = ParsedUrlQuery
+> = GSSPCtx<Q> & {
+  req: { user: UserAuthData | false };
+};
+
 export type GetServerSideProps<
   // tslint:disable-next-line:no-any
   P extends { [key: string]: any } = { [key: string]: any },
-  Q extends ParsedUrlQuery = ParsedUrlQuery
+  Q extends {} = {}
 > = (
-  context: GetServerSidePropsContext<Q> & {
-    req: { user: UserAuthData | false };
-  }
+  context: GetServerSidePropsContext<Q & ParsedUrlQuery>
 ) => Promise<GetServerSidePropsResult<P>>;
 
 interface WithInitialProps {

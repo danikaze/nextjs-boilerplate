@@ -296,9 +296,9 @@ Because passport is ready to be used, other authentication strategies such as [G
 
 #### Usage
 
-Pages you want to protect require `getServerSideProps`. This will disable your SSG but it's something logic to happen if you want the rendering to depend on the actual permissions of the current user.
+Pages you want to protect require `getServerSideProps`. This will disable your SSG but it's something logic to happen if you want the rendering to depend on the actual permissions of the current user. Define this function by using `userRequiredServerSideProps` or `adminRequiredServerSideProps` from [@utils/auth.ts](utils/auth.ts).
 
-The `request` object provided by the [context object](https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering) received in the `getServerSideProps` function will have a `user` property set to `false` if the user is not logged in, or the set object in the configured previously.
+The `request` object provided by the [context object](https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering) received in the `getServerSideProps` function will have a `user` property set to `false` if the user is not logged in, or the set object in the configured previously. The user data can be accessed with the hook `useUserData` from [@utils/auth.ts](utils/auth.ts).
 
 The boilerplate example comes with a defined [User model](./model/user.ts) containing several data, but only information related to `{ id, username, role }` is provided in the authentication cookie -encrypted- (it doesn't do a call to the model to retrieve that information in that request, but just read the encoded cookie), which is the minimum required to make it work. If more information is required, you can retrieve it from your model.
 
