@@ -4,15 +4,15 @@
 
 This folder contains the definitions for the data defined in build-time. This data will be available as global constants in their specified context, depending on the file where it's declared.
 
-| File                                | custom-server | server | client |
-| ----------------------------------- | ------------- | ------ | ------ |
-| [global](./global.js)               | ✔             | ✔      | ✔      |
-| [global-secret](./global-secret.js) | ✔             | ✔      | ✔      |
-| [server](./server.js)               | ✔             | ✔      |        |
-| [server-secret](./server-secret.js) | ✔             | ✔      |        |
-| [client](./client.js)               |               |        | ✔      |
-| [client-secret](./client-secret.js) |               |        | ✔      |
-| [build](./build.d.ts)               | ✔             | ✔      | ✔      |
+| File                                | custom-server | NextJs server | NextJs client | git |
+| ----------------------------------- | ------------- | ------------- | ------------- | --- |
+| [global](./global.js)               | ✔             | ✔             | ✔             | ✔   |
+| [global-secret](./global-secret.js) | ✔             | ✔             | ✔             |     |
+| [server](./server.js)               | ✔             | ✔             |               | ✔   |
+| [server-secret](./server-secret.js) | ✔             | ✔             |               |     |
+| [client](./client.js)               |               |               | ✔             | ✔   |
+| [client-secret](./client-secret.js) |               |               | ✔             |     |
+| [build](./build.d.ts)               | ✔             | ✔             | ✔             | ✔   |
 
 Each context consist of 2 files:
 
@@ -34,3 +34,13 @@ Also, the build process add the values defined in [build.d.ts](./build.d.ts) and
 This values will be replaced in the code in the same way that `#define` work in C/C++ (they will not be declared as constants anywhere), so better not to use build time constants to declare big values used everywhere (it would be ok if declared but reassigned to a constant somewhere in the code, and then that constant imported from other files).
 
 The only difference is for the custom server code ([/server](../server)), where values will be imported because this build doesn't go through webpack.
+
+**Note:** To output in the console the values used in the build, just use the environment variable `PRINT_CONSTANTS` to `true` when executing `npm run build` or `npm run dev` like this:
+
+```
+PRINT_CONSTANTS=true npm run build
+```
+
+```
+PRINT_CONSTANTS=true npm run dev
+```
