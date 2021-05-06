@@ -7,10 +7,10 @@ import { UserAuthData } from '@model/user';
  * hitting the database
  */
 export function serializeUser(
-  user: UserAuthData,
+  user: Express.User,
   done: (err: null | Error, data?: UserAuthData) => void
 ): void {
-  return done(null, user);
+  return done(null, user as UserAuthData);
 }
 
 /**
@@ -21,7 +21,7 @@ export function serializeUser(
  */
 export function deserializeUser(
   data: UserAuthData,
-  done: (err: null | Error, user?: UserAuthData) => void
+  done: (err: null | Error, user?: Express.User | false | null) => void
 ): void {
   return done(null, data);
 }
