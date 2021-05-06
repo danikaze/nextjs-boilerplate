@@ -242,7 +242,7 @@ Most web-apps require some kind of user authentication, and this boilerplate pro
 
 #### Configuration
 
-To enable authentication, just make sure `AUTH_ENABLED` is `true` in the [build-time-constants](./build-time-constants/global.js).
+To enable authentication, just make sure `AUTH_ENABLED` is `true` in the [build-time-constants](./build-time-constants/data/global.js).
 
 There are other values that can be customized:
 
@@ -265,7 +265,7 @@ Because this boilerplate is agnostic on the used database, it's using mock-data 
 
 When checking the username and password, the strategy relies on those values coming from a form with that field names: `username` and `password`, as shown in the [Login form](components/login-form.tsx).
 
-Customizable [constants](./build-time-constants/global.js) are:
+Customizable [constants](./build-time-constants/data/global.js) are:
 
 | Constant                | Notes                                                                                                                                                                                                                                                         |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -289,7 +289,7 @@ In [server.d.ts](./build-time-constants/server.d.ts):
 | AUTH_TWITTER_API_KEY          | Your [App](https://developer.twitter.com/) API Key                |
 | AUTH_TWITTER_API_KEY_SECRET   | Your [App](https://developer.twitter.com/) API Key Secret         |
 
-Make sure to place the values for `AUTH_TWITTER_API_KEY` and `AUTH_TWITTER_API_KEY_SECRET` in the [server-secret.js](./build-time-constants/server-secret.js) file instead of [server.js](./build-time-constants/server.js) so they won't be commited to the repository.
+Make sure to place the values for `AUTH_TWITTER_API_KEY` and `AUTH_TWITTER_API_KEY_SECRET` in the [server-secret.js](./build-time-constants/data/server-secret.js) file instead of [server.js](./build-time-constants/data/server.js) so they won't be commited to the repository.
 
 ##### Other Strategies
 
