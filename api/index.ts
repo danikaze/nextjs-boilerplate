@@ -1,7 +1,6 @@
 import { NextApiHandler, NextApiResponse } from 'next';
 import { IncomingMessage } from 'http';
 import { Request, Response, RequestHandler } from 'express';
-import { Env } from 'next/dist/lib/load-env-config';
 import { UserAuthData } from '@model/user';
 import { NsLogger } from '@utils/logger';
 
@@ -66,7 +65,9 @@ export interface ApiRequest<Q, B> extends IncomingMessage {
     [key: string]: string;
   };
   user: UserAuthData | false;
-  env: Env;
+  env: {
+    [key: string]: string;
+  };
 }
 
 /*

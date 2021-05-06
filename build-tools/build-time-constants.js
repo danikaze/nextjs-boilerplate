@@ -11,9 +11,7 @@ const {
   writeFileSync,
 } = require('fs');
 const packageJson = require('../package.json');
-const GitRevisionPlugin = require('git-revision-webpack-plugin');
-
-const gitRevisionPlugin = new GitRevisionPlugin();
+const getGitData = require('./git');
 
 module.exports = { getConstants, getBuildTimeConstantsPlugins };
 
@@ -34,10 +32,7 @@ function getBuildTimeConstantsPlugins(buildData) {
     langTypeDefGenerated = true;
   }
 
-  const plugins = [
-    gitRevisionPlugin,
-    new buildData.webpack.DefinePlugin(constants),
-  ];
+  const plugins = [new buildData.webpack.DefinePlugin(constants)];
 
   return plugins;
 }
@@ -51,6 +46,8 @@ function getConstants({ type, buildId, dev, isServer, isTest }) {
     {}
   );
 
+  const gitData = getGitData();
+
   allConstants[type] = {
     ...constants,
     IS_PRODUCTION: !dev,
@@ -59,8 +56,8 @@ function getConstants({ type, buildId, dev, isServer, isTest }) {
     BUILD_ID: getBuildId(buildId, dev),
     PACKAGE_NAME: packageJson.name,
     PACKAGE_VERSION: packageJson.version,
-    COMMIT_HASH: gitRevisionPlugin.commithash(),
-    COMMIT_HASH_SHORT: gitRevisionPlugin.commithash().substr(0, 7),
+    COMMIT_HASH: gitData.rev,
+    COMMIT_HASH_SHORT: gitData.shortRev,
     LOCALES_URL: LOCALES_URL,
     AVAILABLE_LANGUAGES: getAvailableLanguages(LOCALES_PATH),
     LOGGER_CONFIG: getLoggerConfig(!dev, isServer, isTest),

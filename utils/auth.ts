@@ -6,7 +6,6 @@ import {
   GetServerSidePropsResult,
   NextApiResponse,
 } from 'next';
-import { Env } from 'next/dist/lib/load-env-config';
 import { useSelector } from 'react-redux';
 import { userSelector } from '@store/model/user/selectors';
 import { ApiHandler, ApiRequest, ApiResponse, HttpStatus } from '@api';
@@ -51,7 +50,9 @@ interface AuthApiRequest<Q, B> extends IncomingMessage {
     [key: string]: string;
   };
   user: UserAuthData;
-  env: Env;
+  env: {
+    [key: string]: string;
+  };
 }
 
 const logger = getLogger('auth');
@@ -76,15 +77,8 @@ export function useUserData(): UserState {
 export function userRequiredServerSideProps<
   P extends IndexedObject = IndexedObject,
   Q extends {} = {}
->(
-  noAuthProps: P,
-  getServerSideProps: AuthGetServerSideProps<P, Q>
-): GetServerSideProps<P, Q> {
-  return authRequiredServerSideProps(
-    USER_ROLES,
-    noAuthProps,
-    getServerSideProps
-  );
+>(getServerSideProps: AuthGetServerSideProps<P, Q>): GetServerSideProps<P, Q> {
+  return authRequiredServerSideProps(USER_ROLES, getServerSideProps);
 }
 
 /**
@@ -97,15 +91,8 @@ export function userRequiredServerSideProps<
 export function adminRequiredServerSideProps<
   P extends IndexedObject = IndexedObject,
   Q extends {} = {}
->(
-  noAuthProps: P,
-  getServerSideProps: AuthGetServerSideProps<P, Q>
-): GetServerSideProps<P, Q> {
-  return authRequiredServerSideProps(
-    ADMIN_ROLES,
-    noAuthProps,
-    getServerSideProps
-  );
+>(getServerSideProps: AuthGetServerSideProps<P, Q>): GetServerSideProps<P, Q> {
+  return authRequiredServerSideProps(ADMIN_ROLES, getServerSideProps);
 }
 
 /**
@@ -117,19 +104,19 @@ export function adminRequiredServerSideProps<
 export function logoutRequiredServerSideProps<
   P extends IndexedObject = IndexedObject,
   Q extends {} = {}
->(
-  authProps: P,
-  getServerSideProps: GetServerSideProps<P, Q>
-): GetServerSideProps<P, Q> {
+>(getServerSideProps: GetServerSideProps<P, Q>): GetServerSideProps<P, Q> {
   return (ctx) => {
-    const res = ctx.res as Response;
     const user = ctx.req.user;
 
     if (user) {
-      logger.info(`Redirecting user to the logout page`);
-      res.redirect(AUTH_DO_LOGOUT_URL);
-      res.end();
-      return Promise.resolve({ props: authProps });
+      logger.verbose(`Redirecting user to the logout page`);
+      return Promise.resolve({
+        redirect: {
+          statusCode: 307,
+          destination: AUTH_DO_LOGOUT_URL,
+          basePath: false,
+        },
+      });
     }
 
     return getServerSideProps(ctx);
@@ -192,23 +179,24 @@ export function isAdmin(user: UserAuthData | false): boolean {
 
 function authRequiredServerSideProps<P, Q>(
   role: string[],
-  noAuthProps: P,
   getServerSideProps: AuthGetServerSideProps<P, Q>
 ): GetServerSideProps<P, Q> {
   return (ctx) => {
     const res = ctx.res as Response;
     const user = ctx.req.user;
-    const originalUrl = ((ctx.req as unknown) as Request).originalUrl;
+    const originalUrl = getRealOriginalUrl(ctx.req);
 
     if (!user) {
       logger.info(
         `Blocked: Non logged user when tried to access ${originalUrl}`
       );
-      res.redirect(
-        `${AUTH_LOGIN_PAGE}?${AUTH_LOGIN_REDIRECT_PARAM}=${originalUrl}`
-      );
-      res.end();
-      return Promise.resolve({ props: noAuthProps });
+      return Promise.resolve({
+        redirect: {
+          statusCode: 307,
+          destination: `${AUTH_LOGIN_PAGE}?${AUTH_LOGIN_REDIRECT_PARAM}=${originalUrl}`,
+          basePath: false,
+        },
+      });
     }
 
     if (!role.includes(user.role)) {
@@ -216,16 +204,20 @@ function authRequiredServerSideProps<P, Q>(
         `Blocked: Wrong role user when tried to access ${originalUrl}`
       );
       try {
-        if (AUTH_FORBIDDEN_PAGE) {
-          res.redirect(AUTH_FORBIDDEN_PAGE);
-        } else {
-          res.sendStatus(HttpStatus.HTTP_FORBIDDEN);
+        if (typeof AUTH_FORBIDDEN_PAGE === 'string') {
+          return Promise.resolve({
+            redirect: {
+              statusCode: 307,
+              destination: AUTH_FORBIDDEN_PAGE,
+              basePath: false,
+            },
+          });
         }
+        res.sendStatus(HttpStatus.HTTP_FORBIDDEN);
       } catch (err) {
         res.sendStatus(HttpStatus.HTTP_FORBIDDEN);
       }
       res.end();
-      return Promise.resolve({ props: noAuthProps });
     }
 
     return getServerSideProps(
@@ -240,7 +232,7 @@ function apiUserWithoutRole(
   res: NextApiResponse
 ): boolean {
   const user = req.user;
-  const originalUrl = ((req as unknown) as Request).originalUrl;
+  const originalUrl = getRealOriginalUrl(req);
 
   // user not logged
   if (!user) {
@@ -268,4 +260,17 @@ function apiUserWithoutRole(
   });
   res.end();
   return false;
+}
+
+/**
+ * When navigating via client-side NextJS doesn't load the full URL but just
+ * a JSON with serverSideProps result.
+ * This function transforms that URL to obtain the original one
+ */
+function getRealOriginalUrl(req: IncomingMessage): string {
+  const originalUrl = (req as Request).originalUrl;
+  const regExp = /^\/_next\/data\/[^/]*(\/.+)\.json$/;
+  const match = regExp.exec(originalUrl);
+  if (match) return match[1];
+  return originalUrl;
 }
