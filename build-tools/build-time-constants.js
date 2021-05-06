@@ -68,7 +68,7 @@ function getConstants({ type, buildId, dev, isServer, isTest }) {
     allConstants[type].LOCALES_PATH = LOCALES_PATH;
   }
 
-  if (dev && !isTest) {
+  if (process.env.PRINT_CONSTANTS === 'true') {
     printConstants(type);
   }
 
