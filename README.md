@@ -305,8 +305,6 @@ The boilerplate example comes with a defined [User model](./model/user.ts) conta
 
 If based on the values the user should not have access to the page, the request can be redirected to other URL.
 
-_**NOTE:** With Next 9 you will get an Error because at this point, the headers have already been sent, but it still will work. From [Next 10](https://github.com/vercel/next.js/discussions/14890) you will be able to return a `redirect` object that will fix this. The error is only displayed in the console, and not in production mode._
-
 _**NOTE:** A different approach can also be chosen without using `getServerSideProps` if it's OK to show the (empty) page to a user without credentials if the data is actually secure (fetched with a protected API)._
 
 ### Testing

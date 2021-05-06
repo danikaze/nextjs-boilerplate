@@ -26,7 +26,7 @@ const Auth: AppPage = () => {
   );
 };
 
-export const getServerSideProps = userRequiredServerSideProps({}, async () => ({
+export const getServerSideProps = userRequiredServerSideProps(async () => ({
   props: {},
 }));
 

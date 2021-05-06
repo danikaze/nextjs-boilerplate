@@ -26,11 +26,8 @@ const Auth: AppPage = () => {
   );
 };
 
-export const getServerSideProps = adminRequiredServerSideProps(
-  {},
-  async () => ({
-    props: {},
-  })
-);
+export const getServerSideProps = adminRequiredServerSideProps(async () => ({
+  props: {},
+}));
 
 export default Auth;
