@@ -4,15 +4,15 @@
 
 This folder contains the definitions for the data defined in build-time. This data will be available as global constants in their specified context, depending on the file where it's declared.
 
-| File                                | custom-server | NextJs server | NextJs client | git |
-| ----------------------------------- | ------------- | ------------- | ------------- | --- |
-| [global](./global.js)               | ✔             | ✔             | ✔             | ✔   |
-| [global-secret](./global-secret.js) | ✔             | ✔             | ✔             |     |
-| [server](./server.js)               | ✔             | ✔             |               | ✔   |
-| [server-secret](./server-secret.js) | ✔             | ✔             |               |     |
-| [client](./client.js)               |               |               | ✔             | ✔   |
-| [client-secret](./client-secret.js) |               |               | ✔             |     |
-| [build](./build.d.ts)               | ✔             | ✔             | ✔             | ✔   |
+| File                                     | custom-server | NextJs server | NextJs client | git |
+| ---------------------------------------- | ------------- | ------------- | ------------- | --- |
+| [global](./data/global.js)               | ✔             | ✔             | ✔             | ✔   |
+| [global-secret](./data/global-secret.js) | ✔             | ✔             | ✔             |     |
+| [server](./data/server.js)               | ✔             | ✔             |               | ✔   |
+| [server-secret](./data/server-secret.js) | ✔             | ✔             |               |     |
+| [client](./data/client.js)               |               |               | ✔             | ✔   |
+| [client-secret](./data/client-secret.js) |               |               | ✔             |     |
+| [build](./data/build.d.ts)               | ✔             | ✔             | ✔             | ✔   |
 
 Each context consist of 2 files:
 
@@ -35,7 +35,11 @@ This values will be replaced in the code in the same way that `#define` work in 
 
 The only difference is for the custom server code ([/server](../server)), where values will be imported because this build doesn't go through webpack.
 
-**Note:** To output in the console the values used in the build, just use the environment variable `PRINT_CONSTANTS` to `true` when executing `npm run build` or `npm run dev` like this:
+## Environment variables
+
+### PRINT_CONSTANTS
+
+To output in the console the values used in the build, just use the environment variable `PRINT_CONSTANTS` to `true` when executing `npm run build` or `npm run dev` like this:
 
 ```
 PRINT_CONSTANTS=true npm run build
@@ -44,3 +48,17 @@ PRINT_CONSTANTS=true npm run build
 ```
 PRINT_CONSTANTS=true npm run dev
 ```
+
+### CONSTANTS_SUBFOLDERS
+
+By default, the values used for the constants are loaded from [build-time-constants/data](./data), but that can be configuring by setting the `CONSTANTS_SUBFOLDERS` environment variable.
+
+Since it accepts a comma-separated list of folders relative to the `build-time-constants` one (being just `data` the default value), specifying more than one folder is allowed:
+
+```
+CONSTANTS_SUBFOLDERS=base,prod npm run build
+```
+
+In this case, the files from the first one will be used as base, the files in the second one will overwrite the first one, and so on. This allow defining common data in one folder and then use specific configuration for different environments (such as _staging_ or _production_)
+
+While the actual provided values can be customized, the data definition (types) will always be read from the `.d.ts` files placed in the [build-time-constants](./) folder, and will be always the same for any environment.
