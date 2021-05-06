@@ -71,77 +71,69 @@ describe('userRequiredServerSideProps', () => {
   });
 
   it('should redirect access of non-logged users', async () => {
-    const { cutProps, notCalledGSSP, spy, ctx } = getTestData(false);
-    const getServerSideProps = userRequiredServerSideProps(
-      cutProps,
-      notCalledGSSP
-    );
+    const { notCalledGSSP, ctx } = getTestData(false);
+    const getServerSideProps = userRequiredServerSideProps(notCalledGSSP);
     const result = await getServerSideProps(ctx);
-    expect(result.props).toBe(cutProps);
-    expect(spy.res.redirect.firstCall.firstArg).toMatch(AUTH_LOGIN_PAGE);
+    if (!('redirect' in result)) return fail();
+    expect(result.redirect.destination).toMatch(AUTH_LOGIN_PAGE);
     expect(notCalledGSSP.called).toBeFalsy();
   });
 
   it('should redirect access of non-expected role users when AUTH_FORBIDDEN_PAGE is set', async () => {
     const forbiddenPage = '/forbidden';
     setGlobalValue('AUTH_FORBIDDEN_PAGE', forbiddenPage);
-    const { cutProps, notCalledGSSP, spy, ctx } = getTestData('wrong-role');
-    const getServerSideProps = userRequiredServerSideProps(
-      cutProps,
-      notCalledGSSP
-    );
+    const { notCalledGSSP, ctx } = getTestData('wrong-role');
+    const getServerSideProps = userRequiredServerSideProps(notCalledGSSP);
     const result = await getServerSideProps(ctx);
-    expect(result.props).toBe(cutProps);
-    expect(spy.res.redirect.firstCall.firstArg).toMatch(AUTH_FORBIDDEN_PAGE);
+    if (!('redirect' in result)) return fail();
+    expect(result.redirect.destination).toMatch(AUTH_FORBIDDEN_PAGE);
     expect(notCalledGSSP.called).toBeFalsy();
   });
 
   it('should just send HTTP_FORBIDDEN when AUTH_FORBIDDEN_PAGE is not set', async () => {
     const forbiddenPage = undefined;
     setGlobalValue('AUTH_FORBIDDEN_PAGE', forbiddenPage);
-    const { cutProps, notCalledGSSP, spy, ctx } = getTestData('wrong-role');
-    const getServerSideProps = userRequiredServerSideProps(
-      cutProps,
-      notCalledGSSP
-    );
+    const { notCalledGSSP, spy, ctx } = getTestData('wrong-role');
+    const getServerSideProps = userRequiredServerSideProps(notCalledGSSP);
     const result = await getServerSideProps(ctx);
-    expect(result.props).toBe(cutProps);
+    if (!('redirect' in result)) return fail();
     expect(spy.res.sendStatus.firstCall.firstArg).toBe(
       HttpStatus.HTTP_FORBIDDEN
     );
+    expect(spy.res.end.called).toBeTruthy();
     expect(notCalledGSSP.called).toBeFalsy();
   });
 
   it('should just send HTTP_FORBIDDEN without failing if AUTH_FORBIDDEN_PAGE is set to an invalid url', async () => {
     const invalidPage = 123;
     setGlobalValue('AUTH_FORBIDDEN_PAGE', invalidPage);
-    const { cutProps, notCalledGSSP, spy, ctx } = getTestData('wrong-role');
-    const getServerSideProps = userRequiredServerSideProps(
-      cutProps,
-      notCalledGSSP
-    );
+    const { notCalledGSSP, spy, ctx } = getTestData('wrong-role');
+    const getServerSideProps = userRequiredServerSideProps(notCalledGSSP);
     const result = await getServerSideProps(ctx);
-    expect(result.props).toBe(cutProps);
+    if (!('redirect' in result)) return fail();
     expect(spy.res.sendStatus.firstCall.firstArg).toBe(
       HttpStatus.HTTP_FORBIDDEN
     );
+    expect(spy.res.end.called).toBeTruthy();
     expect(notCalledGSSP.called).toBeFalsy();
   });
 
   it('should allow access of logged users', async () => {
-    const { cutProps, userProps, userGSSP, spy, ctx } = getTestData('user');
-    const getServerSideProps = userRequiredServerSideProps(cutProps, userGSSP);
+    const { userProps, userGSSP, spy, ctx } = getTestData('user');
+    const getServerSideProps = userRequiredServerSideProps(userGSSP);
     const result = await getServerSideProps(ctx);
-    expect(result.props).toBe(userProps);
+    if (!('props' in result)) return fail();
+    expect(result.props).toEqual(userProps);
     expect(spy.res.redirect.called).toBeFalsy();
     expect(userGSSP.called).toBeTruthy();
   });
 
   it('should allow access of admin users', async () => {
-    const { cutProps, userProps, userGSSP, spy, ctx } = getTestData('admin');
-    const getServerSideProps = userRequiredServerSideProps(cutProps, userGSSP);
+    const { userProps, userGSSP, spy, ctx } = getTestData('admin');
+    const getServerSideProps = userRequiredServerSideProps(userGSSP);
     const result = await getServerSideProps(ctx);
-    expect(result.props).toBe(userProps);
+    if (!('props' in result)) return fail();
+    expect(result.props).toEqual(userProps);
     expect(spy.res.redirect.called).toBeFalsy();
     expect(userGSSP.called).toBeTruthy();
   });
@@ -149,58 +141,55 @@ describe('userRequiredServerSideProps', () => {
 
 describe('adminRequiredServerSideProps', () => {
   it('should redirect access of non-logged users', async () => {
-    const { cutProps, notCalledGSSP, spy, ctx } = getTestData(false);
-    const getServerSideProps = adminRequiredServerSideProps(
-      cutProps,
-      notCalledGSSP
-    );
+    const { notCalledGSSP, spy, ctx } = getTestData(false);
+    const getServerSideProps = adminRequiredServerSideProps(notCalledGSSP);
     const result = await getServerSideProps(ctx);
-    expect(result.props).toBe(cutProps);
-    expect(spy.res.redirect.firstCall.firstArg).toMatch(AUTH_LOGIN_PAGE);
+    if (!('redirect' in result)) return fail();
+    expect(result.redirect.destination).toMatch(AUTH_LOGIN_PAGE);
+    expect(spy.res.end.called).toBeFalsy();
     expect(notCalledGSSP.called).toBeFalsy();
   });
 
   it('should redirect access of non-expected role users', async () => {
-    const { cutProps, notCalledGSSP, spy, ctx } = getTestData('wrong-role');
-    const getServerSideProps = adminRequiredServerSideProps(
-      cutProps,
-      notCalledGSSP
-    );
+    const { notCalledGSSP, spy, ctx } = getTestData('wrong-role');
+    const getServerSideProps = adminRequiredServerSideProps(notCalledGSSP);
     const result = await getServerSideProps(ctx);
-    expect(result.props).toBe(cutProps);
     if (AUTH_FORBIDDEN_PAGE) {
-      expect(spy.res.redirect.firstCall.firstArg).toMatch(AUTH_FORBIDDEN_PAGE);
+      if (!('redirect' in result)) return fail();
+      expect(result.redirect.destination).toMatch(AUTH_FORBIDDEN_PAGE);
+      expect(spy.res.end.called).toBeFalsy();
     } else {
       expect(spy.res.sendStatus.firstCall.firstArg).toBe(
         HttpStatus.HTTP_FORBIDDEN
       );
+      expect(spy.res.end.called).toBeTruthy();
     }
     expect(notCalledGSSP.called).toBeFalsy();
   });
 
   it('should not allow access of simple users', async () => {
-    const { cutProps, notCalledGSSP, spy, ctx } = getTestData('user');
-    const getServerSideProps = adminRequiredServerSideProps(
-      cutProps,
-      notCalledGSSP
-    );
+    const { notCalledGSSP, spy, ctx } = getTestData('user');
+    const getServerSideProps = adminRequiredServerSideProps(notCalledGSSP);
     const result = await getServerSideProps(ctx);
-    expect(result.props).toBe(cutProps);
     if (AUTH_FORBIDDEN_PAGE) {
-      expect(spy.res.redirect.firstCall.firstArg).toMatch(AUTH_FORBIDDEN_PAGE);
+      if (!('redirect' in result)) return fail();
+      expect(result.redirect.destination).toMatch(AUTH_FORBIDDEN_PAGE);
+      expect(spy.res.end.called).toBeFalsy();
     } else {
       expect(spy.res.sendStatus.firstCall.firstArg).toBe(
         HttpStatus.HTTP_FORBIDDEN
       );
+      expect(spy.res.end.called).toBeTruthy();
     }
     expect(notCalledGSSP.called).toBeFalsy();
   });
 
   it('should allow access of admin users', async () => {
-    const { cutProps, userProps, userGSSP, spy, ctx } = getTestData('admin');
-    const getServerSideProps = adminRequiredServerSideProps(cutProps, userGSSP);
+    const { userProps, userGSSP, spy, ctx } = getTestData('admin');
+    const getServerSideProps = adminRequiredServerSideProps(userGSSP);
     const result = await getServerSideProps(ctx);
-    expect(result.props).toBe(userProps);
+    if (!('props' in result)) return fail();
+    expect(result.props).toEqual(userProps);
     expect(spy.res.redirect.called).toBeFalsy();
     expect(userGSSP.called).toBeTruthy();
   });
@@ -208,26 +197,21 @@ describe('adminRequiredServerSideProps', () => {
 
 describe('logoutRequiredServerSideProps', () => {
   it('should logout users', async () => {
-    const { cutProps, notCalledGSSP, spy, ctx } = getTestData('user');
-    const getServerSideProps = logoutRequiredServerSideProps(
-      cutProps,
-      notCalledGSSP
-    );
+    const { notCalledGSSP, spy, ctx } = getTestData('user');
+    const getServerSideProps = logoutRequiredServerSideProps(notCalledGSSP);
     const result = await getServerSideProps(ctx);
-    expect(result.props).toBe(cutProps);
-    expect(spy.res.redirect.called).toBeTruthy();
-    expect(spy.res.redirect.firstCall.firstArg).toMatch(AUTH_DO_LOGOUT_URL);
+    if (!('redirect' in result)) return fail();
+    expect(result.redirect.destination).toMatch(AUTH_DO_LOGOUT_URL);
+    expect(spy.res.redirect.called).toBeFalsy();
     expect(notCalledGSSP.called).toBeFalsy();
   });
 
   it('should do nothing for already non-logged in users', async () => {
-    const { cutProps, noUserProps, noUserGSSP, spy, ctx } = getTestData(false);
-    const getServerSideProps = logoutRequiredServerSideProps(
-      cutProps,
-      noUserGSSP
-    );
+    const { noUserProps, noUserGSSP, spy, ctx } = getTestData(false);
+    const getServerSideProps = logoutRequiredServerSideProps(noUserGSSP);
     const result = await getServerSideProps(ctx);
-    expect(result.props).toBe(noUserProps);
+    if (!('props' in result)) return fail();
+    expect(result.props).toEqual(noUserProps);
     expect(spy.res.redirect.called).toBeFalsy();
     expect(noUserGSSP.called).toBeTruthy();
   });
@@ -327,7 +311,6 @@ function getUserData(role: string | false): UserAuthData | false {
 }
 
 function getTestData(role: string | false, originalUrl: string = 'url') {
-  const cutProps = { called: false };
   const userProps = { user: true };
   const noUserProps = { user: false };
 
@@ -373,7 +356,6 @@ function getTestData(role: string | false, originalUrl: string = 'url') {
   });
 
   return {
-    cutProps,
     userProps,
     noUserProps,
     ctx,
@@ -386,4 +368,8 @@ function getTestData(role: string | false, originalUrl: string = 'url') {
     res: (res as unknown) as NextApiResponse,
     spy: { res },
   };
+}
+
+function fail() {
+  expect(false).toBeTruthy;
 }

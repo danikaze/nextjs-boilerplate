@@ -26,10 +26,8 @@ const Logout: AppPage = () => {
   );
 };
 
-const props = { user: false };
-export const getServerSideProps = logoutRequiredServerSideProps(
-  props,
-  async () => ({ props })
-);
+export const getServerSideProps = logoutRequiredServerSideProps(async () => ({
+  props: {},
+}));
 
 export default Logout;

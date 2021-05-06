@@ -18,4 +18,8 @@ config = withBundleAnalyzer({ enabled: process.env.ANALYZE === 'true' })(
   config
 );
 
+config.future = {
+  webpack5: true,
+};
+
 module.exports = config;
