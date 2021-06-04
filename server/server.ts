@@ -5,7 +5,7 @@ import next from 'next';
 import { useAuth } from './auth';
 
 export function run() {
-  const port = Number(process.env.PORT || '3000');
+  const port = Number(process.env.PORT || SERVER_DEFAULT_PORT);
   const app = next({ dev: !IS_PRODUCTION });
   const handle = app.getRequestHandler();
 
