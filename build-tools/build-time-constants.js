@@ -112,15 +112,21 @@ function getFiles(type) {
 }
 
 function printConstants(type) {
-  console.log(`Build-time constants for the ${type}:`);
-  const printableTable = { ...allConstants[type] };
-  Object.entries(printableTable).forEach(([key, value]) => {
-    if (Array.isArray(value)) {
-      printableTable[key] = `[${value.join(',')}]`;
-    } else if (typeof value === 'object') {
-      printableTable[key] = JSON.stringify(value);
-    }
-  });
+  console.log(`Build-time constants for the ${type}`);
+  const table = { ...allConstants[type] };
+  const printableTable = {};
+  Object.keys(table)
+    .sort()
+    .forEach((key) => {
+      const value = table[key];
+      if (Array.isArray(value)) {
+        printableTable[key] = `[${value.join(',')}]`;
+      } else if (typeof value === 'object') {
+        printableTable[key] = JSON.stringify(value);
+      } else {
+        printableTable[key] = value;
+      }
+    });
   console.table(printableTable);
 }
 
@@ -128,14 +134,19 @@ function getAvailableLanguages(localesPath) {
   if (availableLangs) return availableLangs;
   const list = [];
 
-  readdirSync(localesPath).forEach((filename) => {
-    const absPath = join(localesPath, filename);
-    const stats = statSync(absPath);
-    if (!stats.isDirectory(stats)) return;
-    list.push(filename);
-  });
+  try {
+    readdirSync(localesPath).forEach((filename) => {
+      const absPath = join(localesPath, filename);
+      const stats = statSync(absPath);
+      if (!stats.isDirectory(stats)) return;
+      list.push(filename);
+    });
 
-  availableLangs = list;
+    availableLangs = list;
+  } catch (e) {
+    return [];
+  }
+
   return list;
 }
 
