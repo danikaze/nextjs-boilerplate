@@ -1,7 +1,7 @@
 import { FunctionComponent } from 'react';
 import { Card, CardContent, Typography } from '@material-ui/core';
 import { useUserData } from '@utils/auth';
-import styles from './user-info.module.css';
+import styles from './user-info.module.scss';
 
 export const UserInfo: FunctionComponent = () => {
   const user = useUserData();

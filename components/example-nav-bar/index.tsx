@@ -6,7 +6,7 @@ import { useUserData } from '@utils/auth';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1,
+    width: '100%',
   },
   link: {
     margin: theme.spacing(),

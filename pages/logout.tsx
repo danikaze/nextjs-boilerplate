@@ -1,33 +1,13 @@
-import Head from 'next/head';
-import { ExampleNavBar } from '@components/example-nav-bar';
-import { UserInfo } from '@components/user-info';
-import { logoutRequiredServerSideProps } from '@utils/auth';
-import styles from '@styles/Home.module.css';
 import { AppPage } from './_app';
+import { logoutRequiredServerSideProps } from '@utils/auth';
+import { LogoutPage, Props } from '@page-components/logout';
 
-const Logout: AppPage = () => {
-  return (
-    <>
-      <ExampleNavBar />
-      <div className={styles.container}>
-        <Head>
-          <title>
-            {PACKAGE_NAME} - {PACKAGE_VERSION} ({COMMIT_HASH_SHORT})
-          </title>
-        </Head>
-
-        <main className={styles.main}>
-          <h3>Logged out</h3>
-          <UserInfo />
-        </main>
-        <div>PRODUCTION: {IS_PRODUCTION ? 'true' : 'false'}</div>
-      </div>
-    </>
-  );
+const LogoutPageHandler: AppPage<Props> = () => {
+  return <LogoutPage />;
 };
 
 export const getServerSideProps = logoutRequiredServerSideProps(async () => ({
   props: {},
 }));
 
-export default Logout;
+export default LogoutPageHandler;

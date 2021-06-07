@@ -20,6 +20,7 @@ import { theme } from '@themes';
 import { UserAuthData } from '@model/user';
 import { setUser } from '@store/actions/user';
 
+import '@styles/reset-v2.css';
 import '@styles/globals.css';
 
 export type AppPage<P = {}, IP = P> = NextPage<P & AppPageProps, IP>;
