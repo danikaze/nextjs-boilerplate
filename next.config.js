@@ -22,4 +22,6 @@ config.future = {
   webpack5: true,
 };
 
+config.sassOptions = {};
+
 module.exports = config;
