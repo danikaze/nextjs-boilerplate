@@ -19,6 +19,7 @@ A boilerplate to use in projects with NextJs and TypeScript.
   - [redux-thunk](https://github.com/reduxjs/redux-thunk)
   - [redux-promise-middleware](https://github.com/pburtchaell/redux-promise-middleware)
   - [redux-immutable-state-invariant](https://github.com/leoasis/redux-immutable-state-invariant)
+- [CSS Modules/sass/scss](https://nextjs.org/docs/basic-features/built-in-css-support#sass-support) support without config.
 - [Material-UI](https://material-ui.com/) with [tree shaking](https://material-ui.com/guides/minimizing-bundle-size/)
 - i18n ([internationalization](https://github.com/isaachinman/next-i18next))
 - Isomorphic [server](https://github.com/winstonjs/winston) and client logs
@@ -31,10 +32,11 @@ A boilerplate to use in projects with NextJs and TypeScript.
 
 ### Planned
 
-- Server settings read from filesystem
+- Runtime server settings read from filesystem
 - Migrate to [typescript-eslint](https://github.com/typescript-eslint/typescript-eslint)
 - Component testing
 - Visual regression testing
+- Typed CSS Modules
 
 ## Setup
 
@@ -131,6 +133,11 @@ Reducers here works with the standard [combineReducers](https://redux.js.org/api
 The only thing to do in [reducers/index.ts](./store/reducers/index.ts) which provides the global reducer file, is to fill the `combinedReducer` with the list of your context/container reducers.
 
 The resulting reducer will be combined with the special [hydrateReducer](./store/reducers/hydrate.ts) which is required by [next-redux-wrapper](https://github.com/kirill-konshin/next-redux-wrapper#state-reconciliation-during-hydration).
+
+### CSS Modules/sass/scss
+
+Next.js supports this styles with static optimization just setting up a few things. It's already done here.
+For more sass customization, you can edit the [next.config.js](./next.config.js) where it says `sassOptions`.
 
 ### Material-UI
 
