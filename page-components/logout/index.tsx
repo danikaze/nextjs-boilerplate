@@ -1,15 +1,15 @@
-import { AppPage } from './_app';
+import { FC } from 'react';
 import { Page } from '@components/page';
 import { UserInfo } from '@components/user-info';
 
-const AuthPageHandler: AppPage = () => {
+export type Props = {};
+
+export const LogoutPage: FC<Props> = () => {
   const title = `${PACKAGE_NAME} - ${PACKAGE_VERSION} (${COMMIT_HASH_SHORT})`;
 
   return (
-    <Page title={title} header="Accessible to everyone">
+    <Page title={title} header="Logged-out">
       <UserInfo />
     </Page>
   );
 };
-
-export default AuthPageHandler;

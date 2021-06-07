@@ -23,6 +23,8 @@
       "@components/*": ["components/*"],
       "@model": ["model"],
       "@model/*": ["model/*"],
+      "@page-components": ["page-components"],
+      "@page-components/*": ["page-components/*"],
       "@store": ["store"],
       "@store/*": ["store/*"],
       "@styles": ["styles"],

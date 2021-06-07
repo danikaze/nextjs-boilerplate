@@ -1,28 +1,15 @@
-import Head from 'next/head';
-import { ExampleNavBar } from '@components/example-nav-bar';
-import { UserInfo } from '@components/user-info';
-import { adminRequiredServerSideProps } from '@utils/auth';
-import styles from '@styles/Home.module.css';
 import { AppPage } from './_app';
+import { adminRequiredServerSideProps } from '@utils/auth';
+import { Page } from '@components/page';
+import { UserInfo } from '@components/user-info';
 
-const Auth: AppPage = () => {
+const AuthAdminPageHandler: AppPage = () => {
+  const title = `${PACKAGE_NAME} - ${PACKAGE_VERSION} (${COMMIT_HASH_SHORT})`;
+
   return (
-    <>
-      <ExampleNavBar />
-      <div className={styles.container}>
-        <Head>
-          <title>
-            {PACKAGE_NAME} - {PACKAGE_VERSION} ({COMMIT_HASH_SHORT})
-          </title>
-        </Head>
-
-        <main className={styles.main}>
-          <h3>Only accesible to admins</h3>
-          <UserInfo />
-        </main>
-        <div>PRODUCTION: {IS_PRODUCTION ? 'true' : 'false'}</div>
-      </div>
-    </>
+    <Page title={title} header="Only accessible to admins">
+      <UserInfo />
+    </Page>
   );
 };
 
@@ -30,4 +17,4 @@ export const getServerSideProps = adminRequiredServerSideProps(async () => ({
   props: {},
 }));
 
-export default Auth;
+export default AuthAdminPageHandler;
