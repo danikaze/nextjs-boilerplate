@@ -72,6 +72,10 @@ npm install
 - Edit the [main/tsconfig.json](./tsconfig.json) file with the path aliases to be available.
 - Add them also to the `no-implicit-dependencies` rule in the [tslint.yaml](./tslint.yaml) file.
 
+NextJS based code will work without problem since it's webpack based.
+
+[Custom server](./server) code is compiled directly with `tsc` (no webpack support), so it runs applying [tsconfig-paths](https://github.com/dividab/tsconfig-paths) to ts-node in development mode. For built code, a [custom script](./build-tools/ts-alias.js) replaces the path aliases with the correct routes at build time.
+
 ## Development notes
 
 ### Debugging
