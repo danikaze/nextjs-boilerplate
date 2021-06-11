@@ -1,4 +1,4 @@
-import { AppPage } from './_app';
+import { AppPage } from '@_app';
 import { logoutRequiredServerSideProps } from '@utils/auth';
 import { LogoutPage, Props } from '@page-components/logout';
 

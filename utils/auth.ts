@@ -6,13 +6,13 @@ import {
   GetServerSidePropsResult,
   NextApiResponse,
 } from 'next';
+import { GetServerSideProps } from '@_app';
 import { useSelector } from 'react-redux';
 import { userSelector } from '@store/model/user/selectors';
 import { ApiHandler, ApiRequest, ApiResponse, HttpStatus } from '@api';
 import { UserAuthData } from '@model/user';
 import { getLogger } from '@utils/logger';
 import { UserState } from '@store/model/user';
-import { GetServerSideProps } from '../pages/_app';
 
 export type AuthGetServerSidePropsContext<
   Q extends ParsedUrlQuery = ParsedUrlQuery

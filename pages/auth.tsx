@@ -1,4 +1,4 @@
-import { AppPage } from './_app';
+import { AppPage } from '@_app';
 import { Page } from '@components/page';
 import { UserInfo } from '@components/user-info';
 

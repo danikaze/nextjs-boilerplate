@@ -1,7 +1,7 @@
 import { Profile } from 'passport';
-import { encryptPassword } from '../utils/crypt';
-import { User, UserAuthData } from './user';
-import { LocalUserDB, TwitterUserDB, UserDB } from './user-mock';
+import { encryptPassword } from '@utils/crypt';
+import { User, UserAuthData } from '@model/user';
+import { LocalUserDB, TwitterUserDB, UserDB } from '@model/user/mock';
 
 export async function getUserAuthData(
   userId: number | User

@@ -1,4 +1,4 @@
-import { AppPage } from './_app';
+import { AppPage } from '@_app';
 import { LoginPage, Props } from '@page-components/login';
 
 const LoginPageHandler: AppPage<Props, Props> = (props) => {

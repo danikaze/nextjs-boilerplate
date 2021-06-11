@@ -1,5 +1,5 @@
-import { encryptPasswordSync } from '../utils/crypt';
-import { User, LocalUser, TwitterUser } from './user';
+import { encryptPasswordSync } from '@utils/crypt';
+import { User, LocalUser, TwitterUser } from '.';
 
 /*
  * This is just a mockup for the Database of Users

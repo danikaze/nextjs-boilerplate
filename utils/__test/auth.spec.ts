@@ -4,10 +4,7 @@ import { NextApiResponse } from 'next';
 import { ApiRequest, HttpStatus } from '@api';
 import { UserAuthData, UserRole } from '@model/user';
 import { resetAllGlobalValues, setGlobalValue } from '@test/set-global-value';
-import {
-  GetServerSideProps,
-  GetServerSidePropsContext,
-} from '../../pages/_app';
+import { GetServerSideProps, GetServerSidePropsContext } from '@_app';
 import {
   userRequiredServerSideProps,
   adminRequiredServerSideProps,

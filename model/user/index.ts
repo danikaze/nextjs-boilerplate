@@ -1,6 +1,6 @@
 import { Profile } from 'passport';
-import { authTwitterUser } from './auth';
-import { TwitterUserDB, UserDB } from './user-mock';
+import { authTwitterUser } from '@model/auth';
+import { TwitterUserDB, UserDB } from './mock';
 
 export type UserRole = 'admin' | 'user';
 

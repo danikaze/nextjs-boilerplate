@@ -1,4 +1,4 @@
-import { AppPage } from './_app';
+import { AppPage } from '@_app';
 import { IndexPage, Props } from '@page-components/index';
 import { store } from '@store';
 import { setCount } from '@store/actions/counter';
