@@ -9,7 +9,7 @@
     "next.config.js"
   ],
   "ignore": ["build-time-constants/build.d.ts"],
-  "exec": "ts-node --project server/tsconfig.json --files server/index.ts",
+  "exec": "ts-node --project server/tsconfig.json -r tsconfig-paths/register --files server/index.ts",
   "ext": "js ts",
   "env": {
     "NODE_OPTIONS": "--inspect"
