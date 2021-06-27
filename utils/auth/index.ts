@@ -6,13 +6,12 @@ import {
   GetServerSidePropsResult,
   NextApiResponse,
 } from 'next';
+import { createContext, useContext } from 'react';
 import { GetServerSideProps } from '@_app';
-import { useSelector } from 'react-redux';
-import { userSelector } from '@store/model/user/selectors';
 import { ApiHandler, ApiRequest, ApiResponse, HttpStatus } from '@api';
 import { UserAuthData } from '@model/user';
 import { getLogger } from '@utils/logger';
-import { UserState } from '@store/model/user';
+import { AcceptedComponent, wrapApp } from './with-auth';
 
 export type AuthGetServerSidePropsContext<
   Q extends ParsedUrlQuery = ParsedUrlQuery
@@ -59,12 +58,18 @@ const logger = getLogger('auth');
 const USER_ROLES = ['user', 'admin'];
 const ADMIN_ROLES = ['admin'];
 
+export const Auth = createContext<UserAuthData | false>(false);
+Auth.displayName = 'Auth';
+
 /**
- * Hook that returns the available user data in the redux store
- * or `null` if undefined
+ * Hook that returns the available user data or `false` if not logged in
  */
-export function useUserData(): UserState {
-  return useSelector(userSelector);
+export function useUserData(): UserAuthData | false {
+  return useContext(Auth);
+}
+
+export function appWithAuth(Component: AcceptedComponent) {
+  return wrapApp(Component);
 }
 
 /**
