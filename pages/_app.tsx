@@ -8,7 +8,6 @@ import {
 } from 'next';
 import NextApp, { AppContext, AppProps as NextAppProps } from 'next/app';
 import Head from 'next/head';
-import { store } from '@store';
 import { appWithTranslation } from '@utils/i18n';
 import { appWithAuth } from '@utils/auth';
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -80,8 +79,11 @@ const App: AppType = ({ Component, pageProps }) => {
  * 2. Apply i18n
  * 3. Apply auth
  */
+let ExportedApp = App as AppType;
 
-let ExportedApp = (store.withRedux(App) as unknown) as AppType;
+if (REDUX_ENABLED) {
+  ExportedApp = require('@store').store.withRedux(App) as AppType;
+}
 
 if (I18N_OPTIMIZED_NAMESPACES_ENABLED && !AUTH_ENABLED) {
   ExportedApp.getInitialProps = async (appContext: AppContext) => {

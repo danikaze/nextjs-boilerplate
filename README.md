@@ -86,7 +86,9 @@ Alternatively you can also debug in chrome just going to [chrome://inspect](chro
 
 ### Redux
 
-Redux code is basically contained inside the [store](./store) folder. The [index.ts](./store/index.ts) file basically exports the `wrapper` function used by [next-redux-wrapper](https://github.com/kirill-konshin/next-redux-wrapper), so there's no need to modify it.
+Using Redux is optional in this boilerplate. It's enabled by default because the example is using it, but you can disable it easily by setting `REDUX_ENABLED` constant to `false` in [global.js](./build-time-constants/data/global.js). Make sure you don't include anything from the [store](./store) folder if you disable it, since there is where all the Redux-related code is contained.
+
+The [index.ts](./store/index.ts) file basically exports the `wrapper` function used by [next-redux-wrapper](https://github.com/kirill-konshin/next-redux-wrapper), so there's no need to modify it.
 
 What it is important, are the three subfolders, which are described in the following subsections of this document:
 

@@ -1,5 +1,6 @@
 module.exports = {
   GLOBAL_EXAMPLE: 'GLOBAL_EXAMPLE',
+  REDUX_ENABLED: true,
   I18N_OPTIMIZED_NAMESPACES_ENABLED: true,
   AUTH_ENABLED: true,
   AUTH_LOGIN_PAGE: '/login',
