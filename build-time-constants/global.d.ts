@@ -5,6 +5,12 @@
 declare const GLOBAL_EXAMPLE: string;
 
 /**
+ * If true, Redux will be available (store will be setup)
+ * Leave `false` if not needed for the project
+ */
+declare const REDUX_ENABLED: boolean;
+
+/**
  * - `true`: SSR is optimized delivering only the needed i18n namespaces
  * - `false`: SSG is enabled
  *
