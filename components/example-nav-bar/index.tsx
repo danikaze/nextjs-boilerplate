@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const ExampleNavBar: FunctionComponent = () => {
   const classes = useStyles();
-  const isLoggedIn = useUserData() !== null;
+  const isLoggedIn = !!useUserData();
 
   const LoginLink = isLoggedIn ? (
     <Link href="/logout">
