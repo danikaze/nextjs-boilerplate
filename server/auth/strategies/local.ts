@@ -1,8 +1,8 @@
 import { RequestHandler, Router } from 'express';
 import { default as passport } from 'passport';
 import { Strategy } from 'passport-local';
-import { authLocalUser } from '../../../model/auth';
-import { addUrlParam } from '../../../utils/url';
+import { authLocalUser } from '@model/user/strats/local';
+import { addUrlParam } from '@utils/url';
 
 export const strategy = new Strategy(async (username, password, done) => {
   try {
