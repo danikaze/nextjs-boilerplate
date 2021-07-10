@@ -1,53 +1,58 @@
-import { Profile } from 'passport';
-import { authTwitterUser } from '@model/auth';
-import { TwitterUserDB, UserDB } from './mock';
-
 export type UserRole = 'admin' | 'user';
 
 export type UserAuthData = Pick<User, 'userId' | 'username' | 'role'>;
+
+export const enum UserType {
+  SYSTEM_USER = 'sy', // system (no login)
+  LOCAL_USER = 'lc', // local (user + pass)
+  TWITTER_USER = 'tw', // twitter
+}
 
 export interface User {
   userId: number;
   username: string;
   role: UserRole;
+  type: UserType;
 }
 
-export interface LocalUser {
-  userId: User['userId'];
-  username: string;
-  salt: string;
-  password: string;
+type CreateUserData = Pick<User, 'username' | 'role' | 'type'>;
+
+export async function getUserAuthData(
+  userId: number | User
+): Promise<UserAuthData | undefined> {
+  // dynamic import to avoid loop dependencies when using mock data
+  const { UserDB } = require('./mock');
+
+  const user =
+    typeof userId === 'number'
+      ? UserDB.find((user: User) => user.userId === userId)
+      : userId;
+  if (!user) return;
+
+  return {
+    userId: user.userId,
+    username: user.username,
+    role: user.role,
+  };
 }
 
-export interface TwitterUser {
-  userId: User['userId'];
-  profileId: string;
-}
+export async function createUser(user: CreateUserData): Promise<UserAuthData> {
+  // dynamic import to avoid loop dependencies when using mock data
+  const { UserDB } = require('./mock');
 
-export async function createUserFromTwitter(
-  profile: Profile
-): Promise<UserAuthData> {
-  return new Promise(async (resolve) => {
-    // if there's already a user for this twitter profile, just return it
-    let user = await authTwitterUser(profile);
-    if (user) return resolve(user);
+  const userId =
+    (UserDB.length === 0 ? 0 : UserDB[UserDB.length - 1].userId) + 1;
 
-    // if not, create a new one
-    const userId =
-      (UserDB.length === 0 ? 0 : UserDB[UserDB.length - 1].userId) + 1;
-    user = {
-      userId,
-      username: profile.username!,
-      role: 'user',
-    };
+  const newUser: User = {
+    ...user,
+    userId,
+  };
 
-    UserDB.push(user);
+  UserDB.push(newUser);
 
-    TwitterUserDB.push({
-      userId,
-      profileId: profile.id,
-    });
-
-    resolve(user);
-  });
+  return {
+    userId,
+    username: newUser.username,
+    role: newUser.role,
+  };
 }
