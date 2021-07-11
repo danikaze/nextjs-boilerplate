@@ -40,6 +40,11 @@ export const ExampleNavBar: FunctionComponent = () => {
               <Typography variant="h6">Index</Typography>
             </a>
           </Link>
+          <Link href="/static">
+            <a className={classes.link}>
+              <Typography variant="h6">Static</Typography>
+            </a>
+          </Link>
           <Link href="/auth">
             <a className={classes.link}>
               <Typography variant="h6">User info</Typography>

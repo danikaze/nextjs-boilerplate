@@ -11,31 +11,12 @@ declare const GLOBAL_EXAMPLE: string;
 declare const REDUX_ENABLED: boolean;
 
 /**
- * - `true`: SSR is optimized delivering only the needed i18n namespaces
- * - `false`: SSG is enabled
- *
- * Currently, due to the lack of support in next-i18next for getServerSideProps
- * (https://github.com/isaachinman/next-i18next/issues/652)
- * to provide only the needed i18n namespaces (vs all of them), this is needed
- * if any of the pages use getServerSideProps fetching method
- *
- * This happen to disable Server Side Generation (SSG).
- * If you don't need getServerSideProps, or it's ok for your app to deliver
- * all the i18n namespaces at once, you can set this to `false` and recover SSG
- *
- * SSG still depends on `AUTH_ENABLED`
- */
-declare const I18N_OPTIMIZED_NAMESPACES_ENABLED: boolean;
-
-/**
  * - `true`: Enable `user` in `AppPageProps` to the user value if authenticated
  *           `false` if not logged in
  * - `false`: `user` in `AppPageProps` will still exist, but always `false`
  *
  * If you don't need authentication from server side you can set this to `false`
  * and try to enable Server Side Generation (SSG)
- *
- * SSG still depends on `ENABLE_I18N_OPTIMIZED_NAMESPACES`
  */
 declare const AUTH_ENABLED: boolean;
 /**

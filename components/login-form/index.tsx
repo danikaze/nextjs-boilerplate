@@ -1,4 +1,5 @@
 import { FunctionComponent } from 'react';
+import { useTranslation } from 'next-i18next';
 import {
   Button,
   Card,
@@ -9,7 +10,6 @@ import {
   Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { useTranslation } from '@utils/i18n';
 import { Twitter } from '@components/icons/twitter';
 
 export interface Props {

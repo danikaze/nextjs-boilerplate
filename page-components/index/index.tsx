@@ -1,27 +1,27 @@
 import React, { FC } from 'react';
 import { Page } from '@components/page';
 import { HelloWorld, Props as HelloWorldProps } from '@components/hello-world';
-import pixelCatImage from '@assets/images/pixel-cat.png';
 import { useIndexPage } from './hooks';
 
+import pixelCatImage from '@assets/images/pixel-cat.png';
 import catImage from '@assets/images/cat.jpg';
 
 export type Props = {};
 
-export const IndexPage: FC<Props> = () => {
+export const IndexPage: FC<Props> = (props) => {
   const {
     count,
     increase,
     decrease,
-    currentLang,
-    langList,
+    locale,
+    locales,
     changeLang,
   } = useIndexPage();
 
-  const props: HelloWorldProps = {
+  const helloWorldProps: HelloWorldProps = {
     count,
-    currentLang,
-    langList,
+    locale,
+    locales,
     onIncrease: increase,
     onDecrease: decrease,
     onLangChang: changeLang,
@@ -39,7 +39,7 @@ export const IndexPage: FC<Props> = () => {
         width={INLINE_IMAGE_WIDTH}
         title="This image is loaded inline"
       />
-      <HelloWorld {...props} />
+      <HelloWorld {...helloWorldProps} />
       <img
         src={catImage}
         width={FILE_IMAGE_WIDTH}

@@ -6,8 +6,6 @@
  * __dirname is not working, so this can be used as a workaround
  */
 declare const PROJECT_ROOT: string;
-/** Absolute path to the locales folder */
-declare const LOCALES_PATH: string;
 
 /*
  * Data from server.js

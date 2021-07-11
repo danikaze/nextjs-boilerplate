@@ -40,14 +40,9 @@ export function wrapApp(Component: AcceptedComponent): AppType {
 
   AppWithAuth.getInitialProps = async (appContext: AppContext) => {
     const appProps = await App.getInitialProps(appContext);
-    const defaultProps = appContext.Component.defaultProps || {};
-    const initialProps = Component.getInitialProps
+    const pageProps = Component.getInitialProps
       ? await Component.getInitialProps(appContext)
       : {};
-    const pageProps = {
-      ...defaultProps,
-      ...initialProps,
-    };
 
     const req = appContext.ctx.req as AuthRequest;
     let user: Props['user'] = !IS_SERVER && userData;

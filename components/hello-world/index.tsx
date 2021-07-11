@@ -10,17 +10,17 @@ import {
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { AddCircleOutline, RemoveCircleOutline } from '@material-ui/icons';
-import { Lang, useTranslation } from '@utils/i18n';
 import { SelectInputProps } from '@material-ui/core/Select/SelectInput';
+import { useTranslation } from 'next-i18next';
 
 export interface Props {
   saluteWho?: string;
   count: number;
-  langList: Lang[];
-  currentLang: Lang;
+  locale: AvailableLocale;
+  locales: AvailableLocale[];
   onIncrease: () => void;
   onDecrease: () => void;
-  onLangChang: (lang: Lang) => void;
+  onLangChang: (lang: AvailableLocale) => void;
 }
 
 const StyledCardContent = withStyles((theme: Theme) => ({
@@ -38,17 +38,17 @@ const Count = withStyles({
 export const HelloWorld: FunctionComponent<Props> = ({
   saluteWho,
   count,
-  langList,
-  currentLang,
+  locale,
+  locales,
   onIncrease,
   onDecrease,
   onLangChang,
 }) => {
   const languageChange: SelectInputProps['onChange'] = (event) => {
-    onLangChang(event.target.value as Lang);
+    onLangChang(event.target.value as AvailableLocale);
   };
   const { t } = useTranslation('hello-world');
-  const langItems = langList.map((lang) => (
+  const langItems = locales.map((lang) => (
     <MenuItem key={lang} value={lang}>
       {lang}
     </MenuItem>
@@ -68,11 +68,11 @@ export const HelloWorld: FunctionComponent<Props> = ({
           </IconButton>
         </div>
         <div>
-          <Select defaultValue={currentLang} onChange={languageChange}>
+          <Select defaultValue={locale} onChange={languageChange}>
             {langItems}
           </Select>
-          <Typography>{t('localizedText')}</Typography>
         </div>
+        <Typography>{t('localizedText')}</Typography>
       </StyledCardContent>
     </Card>
   );
