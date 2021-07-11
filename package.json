@@ -34,7 +34,7 @@
     "cookie-session": "^1.4.0",
     "express": "^4.17.1",
     "next": "^10.2.0",
-    "next-i18next": "^6.0.3",
+    "next-i18next": "^8.5.3",
     "next-redux-wrapper": "^7.0.2",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",

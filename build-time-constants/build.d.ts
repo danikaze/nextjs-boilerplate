@@ -20,11 +20,13 @@ declare const IS_PRODUCTION: boolean;
 declare const IS_SERVER: boolean;
 /** Env constant set to `true` when executed by tests */
 declare const IS_TEST: boolean;
-/** Absolute path to the locales url */
-declare const LOCALES_URL: string;
-/** List of available languages (folders) from the LOCALES_PATH */
-declare const AVAILABLE_LANGUAGES: AVAILABLE_LANGUAGE_TYPE[];
-/** List of available i18n languages (auto-generated from LOCALES_PATH) */
-type AVAILABLE_LANGUAGE_TYPE = 'en' | 'es';
+/** Env contant set to `true` when i18n is enabled
+ * (next-i18next.config exists and properly configured)
+ */
+declare const I18N_ENABLED: boolean;
+/** List of available languages (folders) from the i18n config */
+declare const AVAILABLE_LOCALES: AvailableLocale[];
+/** List of available i18n languages (auto-generated from i18n config) */
+type AvailableLocale = 'en' | 'es';
 /** Configuration from logger.config.js */
 declare const LOGGER_CONFIG: {};

@@ -17,6 +17,7 @@ export type AuthGetServerSidePropsContext<
   Q extends ParsedUrlQuery = ParsedUrlQuery
 > = GetServerSidePropsContext<Q> & {
   req: { user: UserAuthData };
+  locale: string;
 };
 
 export type AuthApiHandler<
