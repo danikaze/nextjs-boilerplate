@@ -35,7 +35,7 @@
     "express": "^4.17.1",
     "next": "^10.2.0",
     "next-i18next": "^6.0.3",
-    "next-redux-wrapper": "^6.0.2",
+    "next-redux-wrapper": "^7.0.2",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "passport-twitter": "^1.0.4",
