@@ -1,18 +1,15 @@
+import Image from 'next/image';
 import { AppPage } from '@_app';
 import { Page } from '@components/page';
 import pixelCatImage from '@assets/images/pixel-cat.png';
 
 const StaticPageHandler: AppPage = () => {
   const title = `${PACKAGE_NAME} - ${PACKAGE_VERSION} (${COMMIT_HASH_SHORT})`;
-  const INLINE_IMAGE_WIDTH = 80;
+  const IMAGE_HEIGHT = 100;
 
   return (
     <Page title={title} header="Static page">
-      <img
-        src={pixelCatImage}
-        width={INLINE_IMAGE_WIDTH}
-        title="This image is loaded inline"
-      />
+      <Image src={pixelCatImage} height={IMAGE_HEIGHT} objectFit="contain" />
     </Page>
   );
 };

@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React, { FC } from 'react';
 import { Page } from '@components/page';
 import { HelloWorld, Props as HelloWorldProps } from '@components/hello-world';
@@ -8,7 +9,7 @@ import catImage from '@assets/images/cat.jpg';
 
 export type Props = {};
 
-export const IndexPage: FC<Props> = (props) => {
+export const IndexPage: FC<Props> = () => {
   const {
     count,
     increase,
@@ -27,23 +28,18 @@ export const IndexPage: FC<Props> = (props) => {
     onLangChang: changeLang,
   };
 
-  const INLINE_IMAGE_WIDTH = 80;
-  const FILE_IMAGE_WIDTH = 200;
-
   const title = `${PACKAGE_NAME} - ${PACKAGE_VERSION} (${COMMIT_HASH_SHORT})`;
+  const IMAGE_HEIGHT = 100;
 
   return (
     <Page title={title} header="Index">
-      <img
-        src={pixelCatImage}
-        width={INLINE_IMAGE_WIDTH}
-        title="This image is loaded inline"
-      />
+      <Image src={pixelCatImage} height={IMAGE_HEIGHT} objectFit="contain" />
       <HelloWorld {...helloWorldProps} />
-      <img
+      <Image
         src={catImage}
-        width={FILE_IMAGE_WIDTH}
-        title="This image is loaded from a file"
+        height={IMAGE_HEIGHT}
+        objectFit="contain"
+        placeholder="blur"
       />
     </Page>
   );
