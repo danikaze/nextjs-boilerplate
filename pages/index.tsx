@@ -14,11 +14,17 @@ IndexPageHandler.defaultProps = {
 };
 
 // initialize the store depending on request data
-export const getServerSideProps = store.getServerSideProps((ctx) => {
-  const n = Number(ctx.query?.n);
-  if (!isNaN(n)) {
-    ctx.store.dispatch(setCount(n));
+export const getServerSideProps = store.getServerSideProps<Props>(
+  (store) => async (ctx) => {
+    const n = Number(ctx.query?.n);
+    if (!isNaN(n)) {
+      store.dispatch(setCount(n));
+    }
+
+    return {
+      props: {},
+    };
   }
-});
+);
 
 export default IndexPageHandler;
