@@ -3,24 +3,19 @@
  * This is used internally by the webpack configurations
  */
 const { join } = require('path');
-const {
-  existsSync,
-  readFileSync,
-  readdirSync,
-  statSync,
-  writeFileSync,
-} = require('fs');
+const { existsSync, readFileSync, writeFileSync } = require('fs');
 const packageJson = require('../package.json');
 const getGitData = require('./git');
+let i18n;
+try {
+  i18n = require('../next-i18next.config').i18n;
+} catch (e) {}
 
 module.exports = { getConstants, getBuildTimeConstantsPlugins };
 
 const LOGGER_CONFIG_PATH = join(__dirname, '../logger.config.js');
 const CONSTANTS_PATH = join(__dirname, '../build-time-constants');
-const LOCALES_PATH = join(__dirname, '../public/static/locales');
-const LOCALES_URL = '/static/locales';
 const allConstants = {};
-let availableLangs;
 let langTypeDefGenerated = false;
 
 function getBuildTimeConstantsPlugins(buildData) {
@@ -28,7 +23,7 @@ function getBuildTimeConstantsPlugins(buildData) {
   const constants = stringify(rawConstants);
 
   if (!langTypeDefGenerated) {
-    addLangTypeDefinition(rawConstants.AVAILABLE_LANGUAGES);
+    addLangTypeDefinition(rawConstants.AVAILABLE_LOCALES);
     langTypeDefGenerated = true;
   }
 
@@ -58,14 +53,13 @@ function getConstants({ type, buildId, dev, isServer, isTest }) {
     PACKAGE_VERSION: packageJson.version,
     COMMIT_HASH: gitData.rev,
     COMMIT_HASH_SHORT: gitData.shortRev,
-    LOCALES_URL: LOCALES_URL,
-    AVAILABLE_LANGUAGES: getAvailableLanguages(LOCALES_PATH),
     LOGGER_CONFIG: getLoggerConfig(!dev, isServer, isTest),
+    I18N_ENABLED: (i18n && i18n.locales && i18n.locales.length > 0) || false,
+    AVAILABLE_LOCALES: (i18n && i18n.locales) || [],
   };
 
   if (isServer) {
     allConstants[type].PROJECT_ROOT = join(__dirname, '..');
-    allConstants[type].LOCALES_PATH = LOCALES_PATH;
   }
 
   if (process.env.PRINT_CONSTANTS === 'true') {
@@ -130,26 +124,6 @@ function printConstants(type) {
   console.table(printableTable);
 }
 
-function getAvailableLanguages(localesPath) {
-  if (availableLangs) return availableLangs;
-  const list = [];
-
-  try {
-    readdirSync(localesPath).forEach((filename) => {
-      const absPath = join(localesPath, filename);
-      const stats = statSync(absPath);
-      if (!stats.isDirectory(stats)) return;
-      list.push(filename);
-    });
-
-    availableLangs = list;
-  } catch (e) {
-    return [];
-  }
-
-  return list;
-}
-
 function getLoggerConfig(isProduction, isServer, isTest) {
   if (!existsSync(LOGGER_CONFIG_PATH)) return {};
 
@@ -176,7 +150,7 @@ function getLoggerConfig(isProduction, isServer, isTest) {
 
 function addLangTypeDefinition(availableLangs) {
   const filePath = join(CONSTANTS_PATH, 'build.d.ts');
-  const typeName = 'AVAILABLE_LANGUAGE_TYPE';
+  const typeName = 'AvailableLocale';
   const langList =
     availableLangs.length === 0
       ? 'never'

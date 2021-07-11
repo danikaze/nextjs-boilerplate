@@ -6,7 +6,9 @@
     "logger.config.js",
     "tsconfig.json",
     "public/static/locales",
-    "next.config.js"
+    "next.config.js",
+    "next-18next.config.js",
+    "nodemon.json"
   ],
   "ignore": ["build-time-constants/build.d.ts"],
   "exec": "ts-node --project server/tsconfig.json -r tsconfig-paths/register --files server/index.ts",

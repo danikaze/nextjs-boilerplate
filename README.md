@@ -172,11 +172,11 @@ Code splitting in localized data is enabled by default, meaning that only the ne
 
 For this, localizations are split in namespaces (manually, depending on your application):
 
+- To enable i18n, (next-i18next.config.js)[./next-i18next.config.js] is required.
 - All localization files are in [public/static/locales/LANG/NAMESPACE.json](./public/static/locales).
-- `AVAILABLE_LANGUAGES` will be a [build-time constant](./build-time-constants/build.d.ts) automatically generated from the folders in that location.
-- `AVAILABLE_LANGUAGE_TYPE` will be a type automatically generated matching the values for `AVAILABLE_LANGUAGE`.
-- Namespace `common` is always loaded. Common translations across all the app can be placed here, but better maintain this file as light as possible.
-- For each page, you need to define `namespacesRequired` to a list of namespaces to be loaded from the beginning (SSR) in the `Page.defaultProps`.
+- `AVAILABLE_LOCALES` will be a [build-time constant](./build-time-constants/build.d.ts) automatically generated from the configuration in (next-i18next.config.js)[./next-i18next.config.js].
+- `AvailableLocale` will be a type automatically generated matching the values for `AVAILABLE_LOCALES`.
+- Required localization namespaces are needed for each page. Specify them by using `getStaticProps` or `getServerSideProps` (as [done here](./pages/index.tsx)).
 
 #### Caveats
 
