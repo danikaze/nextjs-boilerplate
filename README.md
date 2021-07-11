@@ -27,7 +27,7 @@ A boilerplate to use in projects with NextJs and TypeScript.
 - Testing, run by [Jest](https://jestjs.io/)
   - Unit testing (with [Jest](https://jestjs.io/) and [Sinon](https://sinonjs.org/))
   - Code coverage [Istanbul](by https://istanbul.js.org/)
-- Support of static file imports via [url-loader](https://webpack.js.org/loaders/url-loader/) and [file-loader](https://webpack.js.org/loaders/file-loader/)
+- Support of static file imports ~~via [url-loader](https://webpack.js.org/loaders/url-loader/) and [file-loader](https://webpack.js.org/loaders/file-loader/)~~ with native [NextJS 11 Images](https://nextjs.org/docs/api-reference/next/image).
 - [Bundle Analyzer](https://www.npmjs.com/package/@next/bundle-analyzer)
 
 ### Planned
@@ -342,51 +342,7 @@ Note that because this repository already provides a [travis-ci configuration](.
 
 ### Static file imports
 
-This boilerplate handles generic static file imports by using [url-loader](https://webpack.js.org/loaders/url-loader/) and [file-loader](https://webpack.js.org/loaders/file-loader/).
-
-Files can be imported as any other file and they will be resolved to their URL, so this is possible:
-
-```tsx
-import catImage from '@assets/images/cat.jpg';
-
-<img src={catImage} />;
-```
-
-With the [default configuration](./build-tools/with-files.js), files less than 8kb will be imported as base64 inline images, while others will be included as external files.
-
-This means there are two ways to import files:
-
-- Using the default NextJS [public](./public) folder, which gives you direct access to the files placed there at build time. As described in the [NextJS documentation](https://nextjs.org/docs/basic-features/static-file-serving), all files here are available publicly in the root path of our application as `serverUrl/*`. Going with this approach makes you manage the URLs of each file manually.
-- Using the [assets](./assets) folder, where files will be processed being copied to the dist folder (`.next/static/assets`) and renamed as `[name]-[hash].[ext]` so they are properly updated if the content is updated, to prevent problems with client side caching when they actually need to be reloaded. Files managed by this method can be accessed in an url as `serverUrl/_next/static/*` but is managed automatically so you just need to use the imported string.
-
-While using one method or another, it's always a good idea to configure a different server than Express to server those static files (i.e. nginx or apache), which usually provide better performance.
-
-This is an example of Apache configuration to redirect all the requests except the static files to the Node JS server, so the static files are served by Apache itself (note that `NEXTJS_PROJECT_PATH` and `EXPRESS_PORT` should be replaced by real values):
-
-```
-Alias /public /NEXTJS_PROJECT_PATH/public
-<Directory /NEXTJS_PROJECT_PATH/public>
-  Options -Indexes +FollowSymLinks +MultiViews
-  AllowOverride All
-  Require all granted
-</Directory>
-
-Alias /assets /NEXTJS_PROJECT_PATH/.next/static/assets
-
-<Directory /NEXTJS_PROJECT_PATH/.next/static/assets>
-  Options -Indexes +FollowSymLinks +MultiViews
-  AllowOverride All
-  Require all granted
-</Directory>
-
-ProxyPass /public !
-ProxyPass /assets !
-ProxyPass / http://localhost:EXPRESS_PORT/
-
-<Proxy *>
-  Require all granted
-</Proxy>
-```
+Since NextJS 11, [url-loader](https://webpack.js.org/loaders/url-loader/) and [file-loader](https://webpack.js.org/loaders/file-loader/) are not used anymore. Instead, the [Image](https://nextjs.org/docs/api-reference/next/image) component is recommended.
 
 ### Bundle Analyzer
 
