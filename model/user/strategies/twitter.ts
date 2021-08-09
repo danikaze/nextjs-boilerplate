@@ -1,4 +1,5 @@
 import { Profile } from 'passport-twitter';
+import { generateUniqueId } from '@model';
 import { createUser, getUserAuthData, User, UserAuthData, UserType } from '..';
 
 export interface TwitterUser {
@@ -50,8 +51,7 @@ export async function createUserFromTwitter(
   if (existingUser) return (await getUserAuthData(existingUser))!;
 
   // if not, create a new one
-  const userId =
-    (UserDB.length === 0 ? 0 : UserDB[UserDB.length - 1].userId) + 1;
+  const userId: User['userId'] = generateUniqueId();
 
   const newUser = await createUser({
     username: profile.username!,
