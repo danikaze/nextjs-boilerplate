@@ -1,4 +1,5 @@
-const { pathsToModuleNameMapper } = require('ts-jest/utils');
+/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
+const { pathsToModuleNameMapper } = require('ts-jest');
 const { compilerOptions } = require('./tsconfig.json');
 const { getConstants } = require('./build-tools/build-time-constants');
 
@@ -18,9 +19,6 @@ module.exports = {
     // Custom transformer for statics, to output its path as a string
     '\\.(jpg|png|gif|svg|ttf|woff)?$': '<rootDir>/test/transform-path.js',
   },
-  transformIgnorePatterns: ['/node_modules/(?!(lodash-es)/)'],
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  testMatch: ['**/*.(test|spec).(ts|tsx)'],
   globals: {
     ...serverBuildTimeConstants,
     'ts-jest': {
@@ -29,12 +27,32 @@ module.exports = {
     },
   },
   setupFilesAfterEnv: [],
+  testMatch: ['**/*.(test|spec).(ts|tsx)'],
   collectCoverage: true,
   coverageDirectory: '<rootDir>/.coverage',
   coverageReporters: ['json', 'lcov', 'text', 'text-summary'],
-  collectCoverageFrom: ['<rootDir>/utils/**/*.{ts,tsx}'],
+  collectCoverageFrom: ['<rootDir>/utils/**/*.{ts,tsx}', '!**/*.d.ts'],
   coveragePathIgnorePatterns: ['/node_modules/'],
-  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
-    prefix: '<rootDir>/',
-  }),
+  moduleNameMapper: {
+    ...pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/' }),
+
+    // Handle CSS imports (with CSS modules)
+    // https://jestjs.io/docs/webpack#mocking-css-modules
+    '^.+\\.module\\.(css|sass|scss)$': 'identity-obj-proxy',
+
+    // Handle CSS imports (without CSS modules)
+    '^.+\\.(css|sass|scss)$': '<rootDir>/__mocks__/styleMock.js',
+
+    // Handle image imports
+    // https://jestjs.io/docs/webpack#handling-static-assets
+    '^.+\\.(jpg|jpeg|png|gif|webp|avif|svg)$': `<rootDir>/__mocks__/fileMock.js`,
+  },
+
+  transform: {
+    '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
+  },
+  transformIgnorePatterns: [
+    '/node_modules/',
+    '^.+\\.module\\.(css|sass|scss)$',
+  ],
 };
