@@ -11,7 +11,9 @@ const levelPriorities = {
   debug: 4,
 };
 
-const levelMethods: { [level in LoggerLevel]: keyof Console } = {
+const levelMethods: {
+  [level in LoggerLevel]: 'error' | 'warn' | 'log' | 'info';
+} = {
   error: 'error',
   warn: 'warn',
   info: 'log',

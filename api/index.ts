@@ -148,7 +148,7 @@ export function restApiHandler<
     try {
       await handler(req, res);
     } catch (error) {
-      apiError(res, { error });
+      apiError(res, { error: error as Error | string });
     }
   };
 }
