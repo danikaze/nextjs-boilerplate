@@ -2,6 +2,7 @@ import express from 'express';
 import compress from 'compression';
 import cookieParser from 'cookie-parser';
 import next from 'next';
+import { csrfProtection } from '@utils/api/csrf';
 import { useAuth } from './auth';
 
 export function run() {
@@ -16,6 +17,10 @@ export function run() {
   server.use(express.urlencoded({ extended: false }));
   server.use(express.json());
   server.use(express.static(`${PROJECT_ROOT}/.next/static`));
+
+  if (CSRF_ENABLED) {
+    server.use(csrfProtection());
+  }
 
   if (AUTH_ENABLED) {
     useAuth(server);

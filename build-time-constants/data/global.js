@@ -1,6 +1,10 @@
 module.exports = {
   GLOBAL_EXAMPLE: 'GLOBAL_EXAMPLE',
   REDUX_ENABLED: true,
+  CSRF_ENABLED: true,
+  CSRF_COOKIE_NAME: '_csrf',
+  CSRF_META_NAME: 'csrf-token',
+  CSRF_REQUEST_HEADER_NAME: 'csrf-token',
   AUTH_ENABLED: true,
   AUTH_LOGIN_PAGE: '/login',
   AUTH_LOGIN_SUCCESS_PAGE: '/auth?logged=1',

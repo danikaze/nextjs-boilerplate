@@ -129,11 +129,16 @@ export function restApiHandler<
 ): NextApiHandler {
   return async (req, res) => {
     if (middleware) {
-      await runMiddleware(
-        (req as unknown) as Request,
-        (res as unknown) as Response,
-        middleware
-      );
+      try {
+        await runMiddleware(
+          (req as unknown) as Request,
+          (res as unknown) as Response,
+          middleware
+        );
+      } catch (error) {
+        apiError(res, { error: error as Error | string });
+        return;
+      }
     }
 
     const handler = handlers[req.method as HttpMethod] as NextApiHandler;

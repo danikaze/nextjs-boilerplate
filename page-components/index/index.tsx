@@ -2,6 +2,7 @@ import Image from 'next/image';
 import React, { FC } from 'react';
 import { Page } from '@components/page';
 import { HelloWorld, Props as HelloWorldProps } from '@components/hello-world';
+import { Joke } from '@components/joke';
 import { useIndexPage } from './hooks';
 
 import pixelCatImage from '@assets/images/pixel-cat.png';
@@ -41,6 +42,7 @@ export const IndexPage: FC<Props> = () => {
         objectFit="contain"
         placeholder="blur"
       />
+      <Joke />
     </Page>
   );
 };

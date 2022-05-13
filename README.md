@@ -29,6 +29,7 @@ A boilerplate to use in projects with NextJs and TypeScript.
   - Code coverage [Istanbul](by https://istanbul.js.org/)
 - Support of static file imports ~~via [url-loader](https://webpack.js.org/loaders/url-loader/) and [file-loader](https://webpack.js.org/loaders/file-loader/)~~ with native [NextJS 11 Images](https://nextjs.org/docs/api-reference/next/image).
 - [Bundle Analyzer](https://www.npmjs.com/package/@next/bundle-analyzer)
+- [CSRF protection](https://github.com/expressjs/csurf)
 
 ### Planned
 
@@ -319,6 +320,69 @@ The boilerplate example comes with a defined [User model](./model/user.ts) conta
 If based on the values the user should not have access to the page, the request can be redirected to other URL.
 
 _**NOTE:** A different approach can also be chosen without using `getServerSideProps` if it's OK to show the (empty) page to a user without credentials if the data is actually secure (fetched with a protected API)._
+
+### CSRF Protection
+
+[Cross Site Request Forgery](https://en.wikipedia.org/wiki/Cross-site_request_forgery) attacks are prevented using the [express/csurf](https://github.com/expressjs/csurf) package.
+
+This boilerplate implements a solution ready to be used just with 3 functions:
+
+- [csrfProtection](./utils/api/csrf.ts)
+- [getServerSidePropsWithCsrf](./utils/api/csrf.ts)
+- [callApi](./utils/api/call-api.ts)
+
+The first one, `csrfProtection`, is required to be passed as a middleware to the exposed apis. This will deny the access to it if the correct token is not present:
+
+```ts
+/*
+ * pages/api/example.ts
+ */
+import { restApiHandler } from '@api';
+import { exampleApiHandler } from '@api/example';
+import { csrfProtection } from '@utils/api/csrf';
+
+export default restApiHandler(
+  { GET: exampleApiHandler },
+  // note that the default ignoreMethods is ['GET', 'HEAD', 'OPTIONS']
+  // and this tries to protect a GET route...
+  csrfProtection({ ignoreMethods: ['HEAD', 'OPTIONS'] })
+);
+```
+
+The second one, `getServerSidePropsWithCsrf` is a wrapper for the `getServerSideProps` function of a page handler that provides the required `csrfToken` in the routes protected by the `csrfProecttion` middleware:
+
+```ts
+/*
+ * pages/index.tsx
+ */
+const gssp = async () => {
+  return { props: ... }
+}
+
+export const getServerSideProps = getServerSidePropsWithCsrf(gssp);
+```
+
+The third one, `callApi` serves as a wrapper over [fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) (client-side) to call the public APIs exposed in the `/api` route ([/pages/api](./pages/api/)), providing all the needed configuration to make CSRF work, making the process transparent.
+
+```ts
+/*
+ * Calling the API from client side
+ */
+function onClick() {
+  await callApi('example', 'GET');
+}
+```
+
+When CSRF enabled (see build constants below), the [app](./pages/_app.tsx)) will generate a CSRF token and embed it in the `<meta>` tags so later it can be used by the requests (handled by `callApi`) and validated in server side by the `csrfProtection` middleware.
+
+#### Configuration
+
+CSRF is enabled by default but can be disabled or customized via the following [build-time-constants](./build-time-constants/global.d.ts):
+
+- `CSRF_ENABLED`: Set it to `'false'` to disable the CSRF protection (default: `'true'`)
+- `CSRF_META_NAME`: Name of the meta flag used to pass the token value from server side to client side (default: `'csrf-token'`)
+- `CSRF_COOKIE_NAME`: Name of the cookie used by csurf (default: `'_csrf'`)
+- `CSRF_REQUEST_HEADER_NAME`: Name of the http header used to send the token in the requests (default: `'csrf-token'`)
 
 ### Testing
 

@@ -22,12 +22,16 @@ import '@styles/globals.css';
 export type AppPage<P = {}, IP = P> = NextPage<P & AppPageProps, IP>;
 interface AppPageProps {
   logger: NsLogger;
+  csrfToken?: string;
 }
 
 export type GetServerSidePropsContext<
   Q extends ParsedUrlQuery = ParsedUrlQuery
 > = GSSPCtx<Q> & {
-  req: { user: UserAuthData | false };
+  req: {
+    user: UserAuthData | false;
+    csrfToken?: () => string;
+  };
 };
 
 export type GetServerSideProps<
@@ -39,6 +43,7 @@ export type GetServerSideProps<
 ) => Promise<GetServerSidePropsResult<P>>;
 
 export type AppType = ComponentType<NextJsAppProps<AppPageProps>> & {
+  csrfToken?: string;
   getInitialProps?: NextComponentType<AppContext>['getInitialProps'];
 };
 
@@ -52,6 +57,10 @@ const App: AppType = ({ Component, pageProps }) => {
   const loggerNamespace = `${Component.displayName || Component.name}Page`;
   (pageProps as AppPageProps).logger = getLogger(loggerNamespace);
 
+  const csrfMeta = CSRF_ENABLED && pageProps.csrfToken && (
+    <meta name={CSRF_META_NAME} content={pageProps.csrfToken} />
+  );
+
   return (
     <>
       <Head>
@@ -61,6 +70,7 @@ const App: AppType = ({ Component, pageProps }) => {
           content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
         />
         <meta name="theme-color" content={theme.palette.primary.main} />
+        {csrfMeta}
       </Head>
       <Logger.Provider value={globalLogger}>
         <ThemeProvider theme={theme}>

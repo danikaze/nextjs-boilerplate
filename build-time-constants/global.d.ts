@@ -10,6 +10,15 @@ declare const GLOBAL_EXAMPLE: string;
  */
 declare const REDUX_ENABLED: boolean;
 
+/** Defines if CSRF protection should be enabled */
+declare const CSRF_ENABLED: boolean;
+/** Cookie name for the CSRF session (`_csrf`) */
+declare const CSRF_COOKIE_NAME: string;
+/** Name for the meta property defining the CSRF token (`csrf-token`) */
+declare const CSRF_META_NAME: string;
+/** Name for the request header containing the CSRF token (`csrf-token`) */
+declare const CSRF_REQUEST_HEADER_NAME: string;
+
 /**
  * - `true`: Enable `user` in `AppPageProps` to the user value if authenticated
  *           `false` if not logged in
