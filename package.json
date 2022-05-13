@@ -5,8 +5,10 @@
   "scripts": {
     "dev": "nodemon",
     "build": "NODE_ENV=production npm run build:next && npm run build:server",
-    "build:next": "next build",
-    "build:server": "tsc --project server/tsconfig.json && node ./build-tools/ts-alias.js",
+    "build:next": "node_modules/.bin/ts-node --project ./build-tools/tsconfig.json node_modules/.bin/next build",
+    "build:server": "npm run build:server:tsc && npm run build:server:alias",
+    "build:server:tsc": "node_modules/.bin/ts-node --project ./build-tools/tsconfig.json node_modules/.bin/tsc  --project server/tsconfig.json",
+    "build:server:alias": "node_modules/.bin/ts-node --project ./build-tools/tsconfig.json ./build-tools/ts-alias.ts",
     "start": "NODE_ENV=production node ./dist/server/index.js",
     "test": "npm run test-only && npm run lint",
     "test-only": "jest",

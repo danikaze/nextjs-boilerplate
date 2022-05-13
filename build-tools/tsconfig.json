@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "CommonJS",
+    "noEmit": true,
+    "isolatedModules": false,
+    "resolveJsonModule": true,
+  },
+  "include": ["./**/*.ts"],
+  "exclude": ["node_modules"]
+}

@@ -1,3 +1,5 @@
+import { requireFromProject } from './require-from-project';
+
 interface SetBuildTimeConstantsOptions {
   type: 'client' | 'server' | 'custom-server';
   dev: boolean;
@@ -15,6 +17,7 @@ interface SetBuildTimeConstantsOptions {
  *
  * To use them, this function needs to be called even before including any
  * other file that could reference those constants to avoid errors.
+ * (Done in `server/index.ts`)
  */
 export function setBuildTimeConstants(
   options: SetBuildTimeConstantsOptions
@@ -30,18 +33,7 @@ export function setBuildTimeConstants(
 /**
  * Because the custom server doesn't accept webpack due to the tsc compilation,
  * routes are different in development/production
- * Later, `PROJECT_ROOT` can be used but this is done before it's available
+ * Later, `PROJECT_ROOT` can be used but at this point is still unavailable
  */
-const getConstants = (() => {
-  const file =
-    process.env.NODE_ENV !== 'production'
-      ? '../build-tools/build-time-constants'
-      : '../../build-tools/build-time-constants';
-
-  return require(file).getConstants as (options: {
-    type: 'custom-server' | 'server' | 'client';
-    dev: boolean;
-    isServer: boolean;
-    buildId?: string;
-  }) => { [key: string]: unknown };
-})();
+const getConstants = requireFromProject('build-tools/build-time-constants')
+  .getConstants;

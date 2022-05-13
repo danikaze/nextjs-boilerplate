@@ -1,7 +1,10 @@
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 const { pathsToModuleNameMapper } = require('ts-jest');
-const { compilerOptions } = require('./tsconfig.json');
-const { getConstants } = require('./build-tools/build-time-constants');
+const {
+  requireFromProject,
+} = require('./dist/build-tools/require-from-project');
+const { compilerOptions } = requireFromProject('tsconfig.json');
+const { getConstants } = requireFromProject('build-tools/build-time-constants');
 
 const serverBuildTimeConstants = getConstants({
   type: 'server',
@@ -32,7 +35,7 @@ module.exports = {
   coverageDirectory: '<rootDir>/.coverage',
   coverageReporters: ['json', 'lcov', 'text', 'text-summary'],
   collectCoverageFrom: ['<rootDir>/utils/**/*.{ts,tsx}', '!**/*.d.ts'],
-  coveragePathIgnorePatterns: ['/node_modules/'],
+  coveragePathIgnorePatterns: ['/node_modules/', '/build-tools/'],
   moduleNameMapper: {
     ...pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/' }),
 

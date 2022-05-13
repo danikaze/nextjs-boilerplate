@@ -8,6 +8,7 @@
     "noEmit": false
   },
   "include": [
+    "../build-tools/*.ts",
     "../build-time-constants/build.d.ts",
     "../build-time-constants/global.d.ts",
     "../build-time-constants/server.d.ts",

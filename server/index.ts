@@ -2,7 +2,7 @@
 (() => {
   const {
     setBuildTimeConstants,
-  } = require('../utils/set-build-time-constants');
+  } = require('../build-tools/set-build-time-constants');
 
   setBuildTimeConstants({
     type: 'custom-server',

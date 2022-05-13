@@ -1,6 +1,9 @@
 const withBundleAnalyzer = require('@next/bundle-analyzer');
-const withConstants = require('./build-tools/with-constants');
-const { i18n } = require('./next-i18next.config');
+const {
+  requireFromProject,
+} = require('./dist/build-tools/require-from-project');
+const { withConstants } = requireFromProject('build-tools/with-constants');
+const { i18n } = requireFromProject('next-i18next.config');
 
 let config = withConstants();
 config.webpack5 = true;

@@ -1,24 +1,54 @@
-/*
- * Don't touch this file.
- * This is used internally by the webpack configurations
- */
-const { join } = require('path');
-const { existsSync, readFileSync, writeFileSync } = require('fs');
-const packageJson = require('../package.json');
-const getGitData = require('./git');
-let i18n;
-try {
-  i18n = require('../next-i18next.config').i18n;
-} catch (e) {}
+// tslint:disable: no-any no-console
 
-module.exports = { getConstants, getBuildTimeConstantsPlugins };
+import { join } from 'path';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
+import { UserConfig } from 'next-i18next';
+import { LoggerOptions } from '@utils/logger';
+import { getGitData } from './git';
+import { requireFromProject } from './require-from-project';
+import packageJson from '../package.json';
 
-const LOGGER_CONFIG_PATH = join(__dirname, '../logger.config.js');
-const CONSTANTS_PATH = join(__dirname, '../build-time-constants');
-const allConstants = {};
+const i18n: UserConfig['i18n'] | null = requireFromProject(
+  `next-i18next.config`,
+  null
+)?.i18n;
+
+export type BuildType = 'custom-server' | 'server' | 'client';
+
+interface BuildData {
+  webpack: any;
+  type: BuildType;
+  buildId: string;
+  dev: boolean;
+  isServer: boolean;
+  isTest?: boolean;
+}
+
+// defined in `build-time-constants/build.d.ts`
+interface BuildConstants {
+  IS_PRODUCTION: boolean;
+  IS_SERVER: boolean;
+  IS_TEST: boolean;
+  BUILD_ID: string;
+  PACKAGE_NAME: string;
+  PACKAGE_VERSION: string;
+  COMMIT_HASH: string;
+  COMMIT_HASH_SHORT: string;
+  LOGGER_CONFIG: LoggerOptions;
+  I18N_ENABLED: boolean;
+  AVAILABLE_LOCALES: string[];
+}
+
+const LOGGER_CONFIG_PATH = 'logger.config.js';
+const CONSTANTS_PATH = 'build-time-constants';
+const allConstants: Record<string, any> = {};
 let langTypeDefGenerated = false;
 
-function getBuildTimeConstantsPlugins(buildData) {
+/**
+ * Returns an array of webpack plugins ready to be appended to the webpack
+ * plugins configuration
+ */
+export function getBuildTimeConstantsPlugins(buildData: BuildData) {
   const rawConstants = getConstants(buildData);
   const constants = stringify(rawConstants);
 
@@ -32,10 +62,22 @@ function getBuildTimeConstantsPlugins(buildData) {
   return plugins;
 }
 
-function getConstants({ type, buildId, dev, isServer, isTest }) {
-  const constants = getFiles(isServer ? 'server' : 'client').reduce(
-    (res, filePath) => {
-      const fileData = require(filePath);
+/**
+ * Returns an object of the build-time-constants provided by the build and the
+ * user-defined files, to be provided to the `webpack.DefinePlugin` or used in
+ * `utils/set-build-time-constants.ts` in the custom server.
+ */
+export function getConstants({
+  type,
+  buildId,
+  dev,
+  isServer,
+  isTest,
+}: BuildData) {
+  const constants = getFiles([isServer ? 'server' : 'client']).reduce(
+    (res, relFilePath) => {
+      const filePath = join(CONSTANTS_PATH, relFilePath);
+      const fileData = requireFromProject(filePath);
       return { ...res, ...fileData };
     },
     {}
@@ -43,8 +85,7 @@ function getConstants({ type, buildId, dev, isServer, isTest }) {
 
   const gitData = getGitData();
 
-  allConstants[type] = {
-    ...constants,
+  const buildConstants: BuildConstants = {
     IS_PRODUCTION: !dev,
     IS_SERVER: isServer,
     IS_TEST: !!isTest,
@@ -58,6 +99,11 @@ function getConstants({ type, buildId, dev, isServer, isTest }) {
     AVAILABLE_LOCALES: (i18n && i18n.locales) || [],
   };
 
+  allConstants[type] = {
+    ...constants,
+    ...buildConstants,
+  };
+
   if (isServer) {
     allConstants[type].PROJECT_ROOT = join(__dirname, '..');
   }
@@ -69,7 +115,7 @@ function getConstants({ type, buildId, dev, isServer, isTest }) {
   return allConstants[type];
 }
 
-function getBuildId(buildId, dev) {
+function getBuildId(buildId: string, dev: boolean): string {
   if (buildId) return buildId;
   if (dev) return 'development';
 
@@ -81,34 +127,38 @@ function getBuildId(buildId, dev) {
   }
 }
 
-function stringify(data) {
+function stringify<T extends {}>(data: T): { [key: string]: string } {
   return Object.entries(data).reduce((res, [key, value]) => {
     res[key] = JSON.stringify(value);
     return res;
-  }, {});
+  }, {} as ReturnType<typeof stringify>);
 }
 
-function getFiles(type) {
-  const files = ['global', 'global-secret', type, `${type}-secret`];
+function getFiles(types: ('server' | 'client')[]): string[] {
+  const files = types.reduce(
+    (files, type) => [...files, type, `${type}-secret`],
+    ['global', 'global-secret']
+  );
+
   const folders = (process.env.CONSTANTS_SUBFOLDERS || 'data')
     .split(',')
-    .map((f) => join(CONSTANTS_PATH, f.trim()));
+    .map((f) => f.trim());
 
   return folders.reduce(
     (allFiles, folder) =>
       allFiles.concat(
         files
           .map((file) => join(folder, `${file}.js`))
-          .filter((file) => existsSync(file))
+          .filter((file) => existsSync(join(CONSTANTS_PATH, file)))
       ),
-    []
+    [] as ReturnType<typeof getFiles>
   );
 }
 
-function printConstants(type) {
+function printConstants(type: BuildType): void {
   console.log(`Build-time constants for the ${type}`);
   const table = { ...allConstants[type] };
-  const printableTable = {};
+  const printableTable: Record<string, string> = {};
   Object.keys(table)
     .sort()
     .forEach((key) => {
@@ -124,11 +174,16 @@ function printConstants(type) {
   console.table(printableTable);
 }
 
-function getLoggerConfig(isProduction, isServer, isTest) {
-  if (!existsSync(LOGGER_CONFIG_PATH)) return {};
+function getLoggerConfig(
+  isProduction: boolean,
+  isServer: boolean,
+  isTest?: boolean
+): LoggerOptions {
+  const NOT_FOUND = 'NOT_FOUND';
+  const module = requireFromProject(LOGGER_CONFIG_PATH, NOT_FOUND);
+  if (module === NOT_FOUND) return {};
 
   try {
-    const module = require(LOGGER_CONFIG_PATH);
     const config =
       typeof module === 'function'
         ? module(isProduction, isServer, isTest)
@@ -136,7 +191,7 @@ function getLoggerConfig(isProduction, isServer, isTest) {
 
     if (!isServer) {
       // remove server logger options so they are not
-      // filtered into the client side
+      // leaked in client side
       delete config.outputFolder;
       delete config.outputFile;
       delete config.maxFiles;
@@ -148,7 +203,7 @@ function getLoggerConfig(isProduction, isServer, isTest) {
   }
 }
 
-function addLangTypeDefinition(availableLangs) {
+function addLangTypeDefinition(availableLangs: string[]): void {
   const filePath = join(CONSTANTS_PATH, 'build.d.ts');
   const typeName = 'AvailableLocale';
   const langList =
@@ -156,10 +211,10 @@ function addLangTypeDefinition(availableLangs) {
       ? 'never'
       : availableLangs.map((lang) => `'${lang}'`).join(' | ');
   const typeDefLine = `type ${typeName} = ${langList};\n`;
-  const code = readFileSync(filePath);
+  const code = readFileSync(filePath).toString();
   const start = code.indexOf(`type ${typeName} =`);
 
-  let newCode;
+  let newCode: string;
   if (start === -1) {
     newCode = code + typeDefLine;
   } else {
