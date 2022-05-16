@@ -49,6 +49,12 @@ PRINT_CONSTANTS=true npm run build
 PRINT_CONSTANTS=true npm run dev
 ```
 
+Defined secret values will be replaced by asterisks to prevent them to be shown or logged by mistake. They are detected by a list of regular expressions ([`SECRETS_REG_EX`](../build-tools/build-time-constants.ts)) but extra ones can be provided as an option when [setting the webpack configuration here](../build-tools/with-constants.ts) (Last 4 characters will still be printed to allow confirming that correct values are used).
+
+```
+| AUTH_TWITTER_API_KEY_SECRET | ****a1b2 |
+```
+
 ### CONSTANTS_SUBFOLDERS
 
 By default, the values used for the constants are loaded from [build-time-constants/data](./data), but that can be configuring by setting the `CONSTANTS_SUBFOLDERS` environment variable.

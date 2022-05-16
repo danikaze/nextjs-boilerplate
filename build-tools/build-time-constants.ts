@@ -22,6 +22,7 @@ interface BuildData {
   dev: boolean;
   isServer: boolean;
   isTest?: boolean;
+  secretsRegEx?: RegExp[];
 }
 
 // defined in `build-time-constants/build.d.ts`
@@ -39,6 +40,13 @@ interface BuildConstants {
   AVAILABLE_LOCALES: string[];
 }
 
+const SECRETS_REG_EX = [
+  // twitter key secret
+  /[a-z0-9]{50}/i,
+  // twitch key secret
+  /[a-z0-9]{30}/i,
+];
+const SECRETS_SHOW_CHARS = 4;
 const LOGGER_CONFIG_PATH = 'logger.config.js';
 const CONSTANTS_PATH = 'build-time-constants';
 const allConstants: Record<string, any> = {};
@@ -73,6 +81,7 @@ export function getConstants({
   dev,
   isServer,
   isTest,
+  secretsRegEx,
 }: BuildData) {
   const constants = getFiles([isServer ? 'server' : 'client']).reduce(
     (res, relFilePath) => {
@@ -109,7 +118,7 @@ export function getConstants({
   }
 
   if (process.env.PRINT_CONSTANTS === 'true') {
-    printConstants(type);
+    printConstants(type, [...SECRETS_REG_EX, ...(secretsRegEx || [])]);
   }
 
   return allConstants[type];
@@ -155,7 +164,7 @@ function getFiles(types: ('server' | 'client')[]): string[] {
   );
 }
 
-function printConstants(type: BuildType): void {
+function printConstants(type: BuildType, secretsRegEx: RegExp[]): void {
   console.log(`Build-time constants for the ${type}`);
   const table = { ...allConstants[type] };
   const printableTable: Record<string, string> = {};
@@ -163,13 +172,15 @@ function printConstants(type: BuildType): void {
     .sort()
     .forEach((key) => {
       const value = table[key];
-      if (Array.isArray(value)) {
-        printableTable[key] = `[${value.join(',')}]`;
-      } else if (typeof value === 'object') {
-        printableTable[key] = JSON.stringify(value);
-      } else {
-        printableTable[key] = value;
-      }
+      const printValue = Array.isArray(value)
+        ? (printableTable[key] = `[${value.join(',')}]`)
+        : typeof value === 'object'
+        ? (printableTable[key] = JSON.stringify(value))
+        : (printableTable[key] = value);
+
+      printableTable[key] = secretsRegEx.some((re) => re.test(printValue))
+        ? `****${printValue.substring(printValue.length - SECRETS_SHOW_CHARS)}`
+        : printValue;
     });
   console.table(printableTable);
 }
