@@ -4,11 +4,29 @@ A boilerplate to use in projects with NextJs and TypeScript.
 
 [![Build Status](https://travis-ci.org/danikaze/nextjs-boilerplate.svg?branch=master)](https://travis-ci.org/danikaze/nextjs-boilerplate)
 
+## Versioning
+
+Each version of this boilerplate includes changes in the used libraries, listed here:
+
+### 1.0.0
+
+- csurf: 1.11.0
+- husky: 4.3.0
+- jest: 27.5.1
+- next-redux-wrapper: 7.0.2
+- next: 11.1.4
+- passport: 0.4.1
+- react: 17.0.2
+- redux: 4.1.0
+- sass: 1.51.0
+- typescript: 4.6.4
+- winston: 3.3.3
+
 ## Features
 
 ### Ready
 
-- TypeScript support (with path aliases support)
+- [TypeScript](https://www.typescriptlang.org/) support by default (with path aliases support)
 - [Debug](https://nextjs.org/docs/advanced-features/debugging) in vscode ready
 - [Prettier](https://prettier.io/)
 - [Linting](https://palantir.github.io/tslint/)
